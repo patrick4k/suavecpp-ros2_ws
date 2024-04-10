@@ -2,7 +2,7 @@
 #include <mavsdk.h>
 #include <thread>
 
-#include "nav/IFlightPlan.h"
+#include "nav/ISystemController.h"
 #include "nav/TakeoffLandFlightPlan.h"
 
 int main(int argc, char **argv)
@@ -28,5 +28,6 @@ int main(int argc, char **argv)
     // TODO: Get ROS nodes spinning
 
     TakeoffLandFlightPlan takeoff_land_flight_plan{};
-    takeoff_land_flight_plan.start(system);
+    takeoff_land_flight_plan.set_system(system);
+    takeoff_land_flight_plan.start();
 }

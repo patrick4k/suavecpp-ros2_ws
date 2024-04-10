@@ -12,17 +12,17 @@ using namespace mavsdk;
 using std::this_thread::sleep_for;
 using std::chrono::seconds;
 
-FlightPlanResult TakeoffLandFlightPlan::start(std::shared_ptr<mavsdk::System>& system)
+SystemControllerResult TakeoffLandFlightPlan::start()
 {
     // Make sure we have a telemetry plugin
-    auto telemetry = Telemetry{system};
+    auto telemetry = Telemetry{m_system};
 
     // We want to listen to the altitude of the drone at 1 Hz.
     const Telemetry::Result set_rate_result = telemetry.set_rate_position(1.0);
 
     if (set_rate_result != Telemetry::Result::Success) {
         std::cerr << "Setting rate failed:" << set_rate_result << '\n';
-        return FlightPlanResult::FAILURE;
+        return SystemControllerResult::FAILURE;
     }
 
     telemetry.subscribe_position([](Telemetry::Position position) {
@@ -30,7 +30,7 @@ FlightPlanResult TakeoffLandFlightPlan::start(std::shared_ptr<mavsdk::System>& s
     });
 
     // Make sure we have an action plugin
-    auto action = Action{system};
+    auto action = Action{m_system};
 
     // Arm the drone
     std::cout << "Arming...\n";
@@ -38,7 +38,7 @@ FlightPlanResult TakeoffLandFlightPlan::start(std::shared_ptr<mavsdk::System>& s
 
     if (arm_result != Action::Result::Success) {
         std::cerr << "Arming failed:" << arm_result << '\n';
-        return FlightPlanResult::FAILURE;
+        return SystemControllerResult::FAILURE;
     }
 
     // Take off
@@ -47,7 +47,7 @@ FlightPlanResult TakeoffLandFlightPlan::start(std::shared_ptr<mavsdk::System>& s
 
     if (takeoff_result != Action::Result::Success) {
         std::cerr << "Takeoff failed:" << takeoff_result << '\n';
-        return FlightPlanResult::FAILURE;
+        return SystemControllerResult::FAILURE;
     }
 
     // Let it hover for a bit before landing again.
@@ -59,12 +59,12 @@ FlightPlanResult TakeoffLandFlightPlan::start(std::shared_ptr<mavsdk::System>& s
 
     if (land_result != Action::Result::Success) {
         std::cerr << "Land failed:" << land_result << '\n';
-        return FlightPlanResult::FAILURE;
+        return SystemControllerResult::FAILURE;
     }
 
     // We are relying on auto-disarming but let's keep watching the telemetry for a bit longer.
     sleep_for(seconds(5));
     std::cout << "Finished...\n";
 
-    return FlightPlanResult::SUCCESS;
+    return SystemControllerResult::SUCCESS;
 }

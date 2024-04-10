@@ -33,9 +33,10 @@ add_executable(suave_main src/suave_main.cpp
         src/util/Util.h
         src/vio/MavVIOBridge.h
         src/vio/MavVIOBridge.cpp
-        src/nav/IFlightPlan.h
+        src/nav/ISystemController.h
         src/nav/TakeoffLandFlightPlan.cpp
-        src/nav/TakeoffLandFlightPlan.h)
+        src/nav/TakeoffLandFlightPlan.h
+        src/nav/SystemControllerResult.h)
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
 ament_target_dependencies(suave_main nav_msgs)
@@ -43,30 +44,6 @@ target_link_libraries(suave_main
         MAVSDK::mavsdk
 )
 include_compile_install(suave_main)
-
-# SUAVE_VIO_BRIDGE
-#add_executable(suave_vio_bridge src/vio/ src/vio/suave_vio_bridge.cpp
-#        src/vio/OdomGeometry.cpp
-#        src/vio/OdomGeometry.h
-#        src/util/Util.cpp
-#        src/util/Util.h)
-#ament_target_dependencies(suave_vio_bridge rclcpp)
-#ament_target_dependencies(suave_vio_bridge nav_msgs)
-#ament_target_dependencies(suave_vio_bridge MAVSDK)
-#target_link_libraries(suave_vio_bridge
-#        MAVSDK::mavsdk
-#)
-#include_compile_install(suave_vio_bridge)
-
-# ^^^ ADD NEW NODE HERE ^^^
-#[[
-add_executable(<node name> [source files...])
-ament_target_dependencies(suave_vio_bridge <node dependency>)
-target_link_libraries(suave_vio_bridge
-        <node libraries to link>
-)
-include_compile_install(<node name>)
-]]
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

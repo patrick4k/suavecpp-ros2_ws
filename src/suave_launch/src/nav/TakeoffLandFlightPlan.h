@@ -4,13 +4,12 @@
 
 #ifndef TAKEOFFLANDFLIGHTPLAN_H
 #define TAKEOFFLANDFLIGHTPLAN_H
-#include "IFlightPlan.h"
+#include "ISystemController.h"
 
 
-class TakeoffLandFlightPlan: public IFlightplan {
+class TakeoffLandFlightPlan: public ISystemController {
 public:
-    FlightPlanResult start(std::shared_ptr<mavsdk::System>& system) override;
+    SystemControllerResult start() override;
 };
-
 
 #endif //TAKEOFFLANDFLIGHTPLAN_H

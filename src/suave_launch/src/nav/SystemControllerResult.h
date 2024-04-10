@@ -1,0 +1,13 @@
+#ifndef SYSTEMCONTROLLERRESULT_H
+#define SYSTEMCONTROLLERRESULT_H
+
+enum class SystemControllerResult
+{
+    SUCCESS,
+    FAILURE,
+    CANCELED,
+    INVALID,
+    NOT_IMPLMENTED
+};
+
+#endif //SYSTEMCONTROLLERRESULT_H
