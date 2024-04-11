@@ -27,9 +27,6 @@ find_package(MAVSDK REQUIRED)
 add_executable(suave_main src/suave_main.cpp
         src/vio/
         src/common
-#        src/vio/suave_vio_bridge.cpp
-        src/vio/OdomGeometry.cpp
-        src/vio/OdomGeometry.h
         src/util/Util.cpp
         src/util/Util.h
         src/vio/MavVIOBridge.h
