@@ -12,17 +12,19 @@ using namespace mavsdk;
 using std::this_thread::sleep_for;
 using std::chrono::seconds;
 
-SystemControllerResult TakeoffLandFlightPlan::start()
+#define check if (m_should_cancel) return MavControllerResult::CANCELLED;
+
+MavControllerResult TakeoffLandFlightPlan::start()
 {
     // Make sure we have a telemetry plugin
-    auto telemetry = Telemetry{m_system};
+    auto telemetry = Telemetry{*this->get_system()};
 
     // We want to listen to the altitude of the drone at 1 Hz.
     const Telemetry::Result set_rate_result = telemetry.set_rate_position(1.0);
 
     if (set_rate_result != Telemetry::Result::Success) {
         std::cerr << "Setting rate failed:" << set_rate_result << '\n';
-        return SystemControllerResult::FAILURE;
+        return MavControllerResult::FAILURE;
     }
 
     telemetry.subscribe_position([](Telemetry::Position position) {
@@ -30,41 +32,45 @@ SystemControllerResult TakeoffLandFlightPlan::start()
     });
 
     // Make sure we have an action plugin
-    auto action = Action{m_system};
+    auto action = Action{*this->get_system()};
 
     // Arm the drone
+    check
     std::cout << "Arming...\n";
     const Action::Result arm_result = action.arm();
 
     if (arm_result != Action::Result::Success) {
         std::cerr << "Arming failed:" << arm_result << '\n';
-        return SystemControllerResult::FAILURE;
+        return MavControllerResult::FAILURE;
     }
 
     // Take off
+    check
     std::cout << "Taking off...\n";
     const Action::Result takeoff_result = action.takeoff();
 
     if (takeoff_result != Action::Result::Success) {
         std::cerr << "Takeoff failed:" << takeoff_result << '\n';
-        return SystemControllerResult::FAILURE;
+        return MavControllerResult::FAILURE;
     }
 
     // Let it hover for a bit before landing again.
     sleep_for(seconds(10));
 
     // Land the drone
+    check
     std::cout << "Landing...\n";
     const Action::Result land_result = action.land();
 
     if (land_result != Action::Result::Success) {
         std::cerr << "Land failed:" << land_result << '\n';
-        return SystemControllerResult::FAILURE;
+        return MavControllerResult::FAILURE;
     }
 
     // We are relying on auto-disarming but let's keep watching the telemetry for a bit longer.
+    check
     sleep_for(seconds(5));
     std::cout << "Finished...\n";
 
-    return SystemControllerResult::SUCCESS;
+    return MavControllerResult::SUCCESS;
 }

@@ -1,11 +1,11 @@
 #ifndef SYSTEMCONTROLLERRESULT_H
 #define SYSTEMCONTROLLERRESULT_H
 
-enum class SystemControllerResult
+enum class MavControllerResult
 {
     SUCCESS,
     FAILURE,
-    CANCELED,
+    CANCELLED,
     INVALID,
     NOT_IMPLMENTED
 };

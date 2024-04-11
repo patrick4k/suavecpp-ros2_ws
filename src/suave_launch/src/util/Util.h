@@ -1,6 +1,6 @@
 #ifndef UTIL_H
 #define UTIL_H
-#include <ostream>
+#include <iostream>
 
 // template<typename T>
 // void log(T msg);
@@ -11,8 +11,8 @@
 // template<typename T>
 // void warn(T msg);
 
-#define error std::cerr << "ERROR: "
-#define log std::cout << "INFO: "
-#define warn std::cout << "WARNING: "
+#define suave_err std::cerr << "ERROR: "
+#define suave_log std::cout << "INFO: "
+#define suave_warn std::cout << "WARNING: "
 
 #endif //UTIL_H

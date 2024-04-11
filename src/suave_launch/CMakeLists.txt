@@ -26,6 +26,7 @@ find_package(MAVSDK REQUIRED)
 # SUAVE_MAIN
 add_executable(suave_main src/suave_main.cpp
         src/vio/
+        src/common
 #        src/vio/suave_vio_bridge.cpp
         src/vio/OdomGeometry.cpp
         src/vio/OdomGeometry.h
@@ -33,10 +34,10 @@ add_executable(suave_main src/suave_main.cpp
         src/util/Util.h
         src/vio/MavVIOBridge.h
         src/vio/MavVIOBridge.cpp
-        src/nav/ISystemController.h
+        src/common/IMavController.h
         src/nav/TakeoffLandFlightPlan.cpp
         src/nav/TakeoffLandFlightPlan.h
-        src/nav/SystemControllerResult.h)
+        src/common/MavControllerResult.h)
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
 ament_target_dependencies(suave_main nav_msgs)

@@ -7,21 +7,8 @@
 
 using namespace mavsdk;
 
-std::optional<double> InitialHeading{};
-
-void SetInitialHeading(double heading)
+MocapMessages RtabOdom2MocapMessage(nav_msgs::msg::Odometry msg, const double& gam)
 {
-    InitialHeading = heading;
-}
-
-MocapMessages RtabOdom2MocapMessage(nav_msgs::msg::Odometry msg)
-{
-    if (!InitialHeading)
-    {
-        error << "Initial heading not set";
-    }
-
-    double gam = *InitialHeading;
     const auto q = msg.pose.pose.orientation;
     auto yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
     auto pitch = asin(-2.0*(q.x*q.z - q.w*q.y));
