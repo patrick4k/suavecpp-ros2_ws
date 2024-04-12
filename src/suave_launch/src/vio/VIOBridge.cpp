@@ -1,21 +1,11 @@
-#include "MavVIOBridge.h"
+//
+// Created by suave on 4/12/24.
+//
 
-#include <nav_msgs/msg/detail/odometry__struct.hpp>
-#include <plugins/mocap/mocap.h>
-#include <plugins/telemetry/telemetry.h>
-#include <rclcpp/executors.hpp>
-#include <rclcpp/node.hpp>
-#include <utility>
+#include "VIOBridge.h"
 
-using namespace mavsdk;
 
-struct MocapMessages
-{
-    Mocap::VisionPositionEstimate vision_position_estimate;
-    Mocap::Odometry odometry;
-};
-
-MocapMessages RtabOdom2MocapMessage(const nav_msgs::msg::Odometry::SharedPtr& msg, const double& gam)
+VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr& msg, const double& gam)
 {
     const auto q = msg->pose.pose.orientation;
     auto yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
@@ -78,7 +68,7 @@ MocapMessages RtabOdom2MocapMessage(const nav_msgs::msg::Odometry::SharedPtr& ms
     return { vision_position_estimate, odometry };
 }
 
-bool handle_mocap_result(const std::string& name, const Mocap::Result& result)
+bool HandleMocapResult(const std::string& name, const Mocap::Result& result)
 {
     switch (result)
     {
@@ -103,46 +93,16 @@ bool handle_mocap_result(const std::string& name, const Mocap::Result& result)
     return false;
 }
 
-MavVIOBridge::MavVIOBridge(std::shared_ptr<System> system) : IMavController(std::move(system)),
-    m_executor{std::make_shared<rclcpp::executors::SingleThreadedExecutor>()},
-    m_node{std::make_shared<rclcpp::Node>("rtabmap_listener")}
+void VIOBridge::callback(OdomMsg::SharedPtr msg)
 {
-    const Telemetry telem{*this->get_system()};
-    const auto heading = telem.heading().heading_deg * M_PI / 180.0;
+    const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading);
+    const Mocap mocap{*this->get_system()};
+    const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
+    const auto odom_result = mocap.set_odometry(odometry);
 
-    m_node->create_subscription<nav_msgs::msg::Odometry>("/odom", 10, [this, heading](nav_msgs::msg::Odometry::SharedPtr msg)->void {
-        const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, heading);
-        const Mocap mocap{*this->get_system()};
-        const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
-        const auto odom_result = mocap.set_odometry(odometry);
-
-        if (!handle_mocap_result("Mocap::VisionPositionEstimate", vpe_result)
-            || !handle_mocap_result("Mocap::Odometry", odom_result))
-        {
-            suave_err << "Error sending VIO data to Mocap" << std::endl;
-        }
-    });
-}
-
-MavControllerResult MavVIOBridge::start()
-{
-    m_spin_future = std::async(
-        std::launch::async,
-        [this]() -> void
-        {
-            m_executor->add_node(m_node);
-            m_executor->spin();
-        }
-    );
-
-    return MavControllerResult::SUCCESS;
-}
-
-void MavVIOBridge::stop()
-{
-    m_executor->cancel();
-    if (m_spin_future->valid())
+    if (!HandleMocapResult("Mocap::VisionPositionEstimate", vpe_result)
+        || !HandleMocapResult("Mocap::Odometry", odom_result))
     {
-        m_spin_future->get();
+        suave_err << "Error sending VIO data to Mocap" << std::endl;
     }
 }

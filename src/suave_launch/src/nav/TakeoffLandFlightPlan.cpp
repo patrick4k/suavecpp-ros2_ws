@@ -1,12 +1,14 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/action/action.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
+#include <mavsdk/plugins/offboard/offboard.h>
 #include <iostream>
 
 #include "TakeoffLandFlightPlan.h"
 
 #include <chrono>
 #include <thread>
+#include <plugins/mocap/mocap.h>
 
 using namespace mavsdk;
 using std::this_thread::sleep_for;
@@ -54,8 +56,20 @@ MavControllerResult TakeoffLandFlightPlan::start()
         return MavControllerResult::FAILURE;
     }
 
-    // Let it hover for a bit before landing again.
     sleep_for(seconds(10));
+
+    auto offboard = Offboard{*get_system()};
+    offboard.set_velocity_body(Offboard::VelocityBodyYawspeed{1, 0, 0, 0});
+    auto offboard_result = offboard.start();
+    if (offboard_result != Offboard::Result::Success) {
+        std::cerr << "Offboard start failed:" << offboard_result << '\n';
+        return MavControllerResult::FAILURE;
+    }
+    sleep_for(seconds(1));
+    offboard.set_velocity_body(Offboard::VelocityBodyYawspeed{0, 0, 0, 0});
+
+    // Let it hover for a bit before landing again.
+    sleep_for(seconds(5));
 
     // Land the drone
     check

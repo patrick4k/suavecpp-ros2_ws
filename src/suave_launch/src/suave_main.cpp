@@ -3,10 +3,27 @@
 #include <thread>
 #include <rclcpp/utilities.hpp>
 
+#include "common/SuaveTaskManager.h"
 #include "nav/TakeoffLandFlightPlan.h"
 #include "vio/MavVIOBridge.h"
 
+
 int main(int argc, char **argv)
+{
+    rclcpp::init(argc, argv);
+
+    auto controller_result = SuaveTaskManager::create();
+    if (!controller_result.has_value())
+    {
+        std::cerr << "Failed to create SuaveTaskManager\n";
+        return 1;
+    }
+    auto controller = controller_result.value();
+    controller.start();
+    rclcpp::shutdown();
+}
+
+int main1(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
 
@@ -30,6 +47,8 @@ int main(int argc, char **argv)
     auto system = *mavsdk.systems().begin();
     std::cout << "System connected\n";
 
+
+
     // TODO: Get ROS nodes spinning
 
     // MavVIOBridge vio_bridge{system};
@@ -38,7 +57,7 @@ int main(int argc, char **argv)
     TakeoffLandFlightPlan takeoff_land_flight_plan{system};
     takeoff_land_flight_plan.start_in_thread();
 
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(30));
 
     takeoff_land_flight_plan.stop();
 

@@ -34,7 +34,16 @@ add_executable(suave_main src/suave_main.cpp
         src/common/IMavController.h
         src/nav/TakeoffLandFlightPlan.cpp
         src/nav/TakeoffLandFlightPlan.h
-        src/common/MavControllerResult.h)
+        src/common/MavControllerResult.h
+        src/ros/IRosController.h
+        src/ros/RosSubscriber.cpp
+        src/ros/RosSubscriber.h
+        src/vio/VIOBridge.cpp
+        src/vio/VIOBridge.h
+        src/common/ISuaveController.h
+        src/common/SuaveTaskManager.cpp
+        src/common/SuaveTaskManager.h
+)
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
 ament_target_dependencies(suave_main nav_msgs)

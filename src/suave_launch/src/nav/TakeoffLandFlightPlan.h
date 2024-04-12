@@ -6,8 +6,7 @@
 #define TAKEOFFLANDFLIGHTPLAN_H
 #include "../common/IMavController.h"
 
-
-class TakeoffLandFlightPlan final : public IMavController {
+class TakeoffLandFlightPlan : public IMavController {
 public:
     explicit TakeoffLandFlightPlan(const std::shared_ptr<mavsdk::System>& system)
         : IMavController(system)
