@@ -5,7 +5,7 @@
 #include "VIOBridge.h"
 
 
-VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr& msg, const double& gam)
+VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam)
 {
     const auto q = msg->pose.pose.orientation;
     auto yaw = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
@@ -93,12 +93,40 @@ bool HandleMocapResult(const std::string& name, const Mocap::Result& result)
     return false;
 }
 
-void VIOBridge::callback(OdomMsg::SharedPtr msg)
+void PrintMocapOdometry(const Mocap::Odometry& odometry) {
+    // Convert quaternion to Euler angles
+    auto toEuler = [](const Mocap::Quaternion& q) {
+        float roll = std::atan2(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+        float pitch = std::asin(2.0f * (q.w * q.y - q.z * q.x));
+        float yaw = std::atan2(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z));
+        return std::make_tuple(roll, pitch, yaw);
+    };
+
+    auto [roll, pitch, yaw] = toEuler(odometry.q);
+
+    // Convert radians to degrees
+    auto rad_to_deg = [](float rad) { return rad * 180 / M_PI; };
+
+    std::cout << "Mocap Odometry:\n";
+
+    std::cout << "Position (NED): [" << odometry.position_body.x_m << ", " << odometry.position_body.y_m << ", " << odometry.position_body.z_m << "] m\n";
+
+    std::cout << "Orientation (RPY): [" << rad_to_deg(roll) << ", " << rad_to_deg(pitch) << ", " << rad_to_deg(yaw) << "] deg\n";
+
+    std::cout << "Velocity (Body): [" << odometry.speed_body.x_m_s << ", " << odometry.speed_body.y_m_s << ", " << odometry.speed_body.z_m_s << "] m/s\n";
+
+    std::cout << "Angular Velocity (Body): [" << rad_to_deg(odometry.angular_velocity_body.roll_rad_s) << ", " << rad_to_deg(odometry.angular_velocity_body.pitch_rad_s) << ", " << rad_to_deg(odometry.angular_velocity_body.yaw_rad_s) << "] deg/s\n";
+}
+
+void VIOBridge::callback(const OdomMsg::SharedPtr msg) const
 {
+    suave_log << "VIOBridge::callback()" << std::endl;
     const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading);
     const Mocap mocap{*this->get_system()};
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
     const auto odom_result = mocap.set_odometry(odometry);
+
+    PrintMocapOdometry(odometry);
 
     if (!HandleMocapResult("Mocap::VisionPositionEstimate", vpe_result)
         || !HandleMocapResult("Mocap::Odometry", odom_result))
