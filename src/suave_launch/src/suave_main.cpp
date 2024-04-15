@@ -7,18 +7,10 @@
 #include "nav/TakeoffLandFlightPlan.h"
 #include "vio/MavVIOBridge.h"
 
-
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-
-    auto controller_result = SuaveTaskManager::create();
-    if (!controller_result.has_value())
-    {
-        std::cerr << "Failed to create SuaveTaskManager\n";
-        return 1;
-    }
-    auto controller = controller_result.value();
+    SuaveTaskManager controller{};
     controller.start();
     rclcpp::shutdown();
 }
@@ -62,4 +54,5 @@ int main1(int argc, char **argv)
     takeoff_land_flight_plan.stop();
 
     rclcpp::shutdown();
+    return 0;
 }

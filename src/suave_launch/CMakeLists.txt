@@ -43,6 +43,7 @@ add_executable(suave_main src/suave_main.cpp
         src/common/ISuaveController.h
         src/common/SuaveTaskManager.cpp
         src/common/SuaveTaskManager.h
+        src/common/Mav.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
