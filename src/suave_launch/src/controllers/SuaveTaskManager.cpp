@@ -17,7 +17,7 @@ void SuaveTaskManager::start()
     auto vio_bridge = VIOBridge{m_system};
     m_controllers.push_back(&vio_bridge);
 
-    auto vio_result = vio_bridge.start();
+    auto vio_result = vio_bridge.start_in_thread();
 
     auto flight_plan_result = takeoff_land_flight_plan.start();
 
@@ -28,7 +28,7 @@ void SuaveTaskManager::start()
         std::cerr << "TakeoffLandFlightPlan failed" << std::endl;
     }
 
-    if (vio_result != MavControllerResult::SUCCESS)
+    if (vio_result->get() != MavControllerResult::SUCCESS)
     {
         std::cerr << "VIOBridge failed" << std::endl;
     }
