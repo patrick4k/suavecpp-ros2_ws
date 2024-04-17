@@ -46,6 +46,7 @@ add_executable(suave_main src/suave_main.cpp
         src/nav/SuaveOffboard.cpp
         src/nav/SuaveOffboard.h
         src/util/Result.h
+        src/util/Timer.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
