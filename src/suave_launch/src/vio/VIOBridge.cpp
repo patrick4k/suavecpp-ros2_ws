@@ -5,6 +5,13 @@
 #include "VIOBridge.h"
 
 
+MavControllerResult VIOBridge::start()
+{
+    m_executor->add_node(this->get_node_base_interface());
+    m_executor->spin();
+    return MavControllerResult::SUCCESS;
+}
+
 VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam)
 {
     const auto q = msg->pose.pose.orientation;
@@ -118,10 +125,10 @@ void PrintMocapOdometry(const Mocap::Odometry& odometry) {
     std::cout << "Angular Velocity (Body): [" << rad_to_deg(odometry.angular_velocity_body.roll_rad_s) << ", " << rad_to_deg(odometry.angular_velocity_body.pitch_rad_s) << ", " << rad_to_deg(odometry.angular_velocity_body.yaw_rad_s) << "] deg/s\n";
 }
 
-void VIOBridge::callback(const OdomMsg::SharedPtr msg) const
+void VIOBridge::callback(const OdomMsg::SharedPtr msg)
 {
     suave_log << "VIOBridge::callback()" << std::endl;
-    const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading);
+    const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading_rad);
     const Mocap mocap{*this->get_system()};
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
     const auto odom_result = mocap.set_odometry(odometry);

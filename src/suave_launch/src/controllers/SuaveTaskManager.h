@@ -8,8 +8,8 @@
 #include <mavsdk.h>
 #include <thread>
 
-#include "IMavController.h"
-#include "ISuaveController.h"
+#include "../common/IMavController.h"
+#include "../common/ISuaveController.h"
 
 
 class SuaveTaskManager : public ISuaveController {

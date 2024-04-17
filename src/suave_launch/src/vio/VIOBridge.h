@@ -13,17 +13,26 @@
 using namespace mavsdk;
 using OdomMsg = nav_msgs::msg::Odometry;
 
-class VIOBridge: public RosSubscriber<OdomMsg> {
+class VIOBridge: public IMavController, public rclcpp::Node {
 public:
     explicit VIOBridge(std::shared_ptr<System> system) :
-    RosSubscriber(std::move(system), "rtabmaps_listener", "/odom")
+    IMavController(std::move(system)),
+    Node("suave_vio_bridge")
     {
         const Telemetry telem{*this->get_system()};
-        m_heading = telem.heading().heading_deg * M_PI / 180.0;
+        m_heading_rad = telem.heading().heading_deg * M_PI / 180.0;
+
+        m_subscription = this->create_subscription<OdomMsg>("/odom", 10, std::bind(&VIOBridge::odomCallback, this, std::placeholders::_1));
     }
 
+    MavControllerResult start() override;
+
 private:
-    double m_heading;
+    double m_heading_rad;
+    using Subscription = rclcpp::Subscription<OdomMsg>;
+    std::optional<Subscription::SharedPtr> m_subscription{};
+    using Executor = rclcpp::executors::SingleThreadedExecutor;
+    std::shared_ptr<Executor> m_executor = std::make_shared<Executor>();
 
     struct MocapMessages
     {
@@ -33,8 +42,14 @@ private:
 
     static MocapMessages RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam);
 
-public:
-    void callback(const OdomMsg::SharedPtr msg) const override;
+    void callback(const OdomMsg::SharedPtr msg);
+
+    void odomCallback(const nav_msgs::msg::Odometry::SharedPtr msg)
+    {
+        // Print out the received odometry message
+        RCLCPP_INFO(this->get_logger(), "Received odom: [%f, %f, %f]",
+                     msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
+    }
 
 };
 
