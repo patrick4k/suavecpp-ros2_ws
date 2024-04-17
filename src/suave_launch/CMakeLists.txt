@@ -50,6 +50,12 @@ add_executable(suave_main src/suave_main.cpp
         src/common/ITask.h
         src/ros/RosNodeSpinner.cpp
         src/ros/RosNodeSpinner.h
+        src/mavutil/Drone.cpp
+        src/mavutil/Drone.h
+        src/controllers/SuaveVIOTestFlight.cpp
+        src/controllers/SuaveVIOTestFlight.h
+        src/mavutil/MavUtil.h
+        src/mavutil/MavUtil.cpp
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)

@@ -5,6 +5,7 @@
 #include "SuaveTaskManager.h"
 
 #include "../nav/TakeoffLandFlightPlan.h"
+#include "../ros/RosNodeSpinner.h"
 #include "../vio/VIOBridge.h"
 
 void SuaveTaskManager::start()
@@ -15,13 +16,15 @@ void SuaveTaskManager::start()
     m_controllers.push_back(&takeoff_land_flight_plan);
 
     auto vio_bridge = VIOBridge{m_system};
-    m_controllers.push_back(&vio_bridge);
+    RosNodeSpinner spinner{};
+    spinner.add(vio_bridge.get_node_base_interface());
+    m_controllers.push_back(&spinner);
 
-    auto vio_result = vio_bridge.start_in_thread();
+    auto vio_result = spinner.start_in_thread();
 
     auto flight_plan_result = takeoff_land_flight_plan.start();
 
-    vio_bridge.stop();
+    spinner.stop();
 
     if (flight_plan_result != TaskResult::SUCCESS)
     {

@@ -5,13 +5,6 @@
 #include "VIOBridge.h"
 
 
-TaskResult VIOBridge::start()
-{
-    m_executor->add_node(this->get_node_base_interface());
-    m_executor->spin();
-    return TaskResult::SUCCESS;
-}
-
 VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam)
 {
     const auto q = msg->pose.pose.orientation;
@@ -129,7 +122,7 @@ void VIOBridge::callback(const OdomMsg::SharedPtr msg)
 {
     suave_log << "VIOBridge::callback()" << std::endl;
     const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading_rad);
-    const Mocap mocap{*this->get_system()};
+    const Mocap mocap{m_system};
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
     const auto odom_result = mocap.set_odometry(odometry);
 

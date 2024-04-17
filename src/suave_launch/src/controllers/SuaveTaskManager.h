@@ -15,7 +15,6 @@
 class SuaveTaskManager : public ISuaveController {
 public:
     SuaveTaskManager() :
-    m_mavsdk(mavsdk::Mavsdk{}),
     m_system(nullptr)
     {
         // Connect to the PX4 SITL.
@@ -39,9 +38,8 @@ public:
     void start() override;
 
 private:
-    mavsdk::Mavsdk m_mavsdk;
     std::shared_ptr<mavsdk::System> m_system;
-    std::vector<IMavController*> m_controllers{};
+    std::vector<ITask*> m_controllers{};
 };
 
 #endif //SUAVETASKMANAGER_H

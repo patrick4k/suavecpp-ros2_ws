@@ -15,6 +15,12 @@ public:
     TaskResult start() override;
     void stop() override;
 
+    template<typename T>
+    void add(T node) const
+    {
+        m_executor->add_node(node);
+    }
+
     void add_node(rclcpp::Node::SharedPtr node) const
     {
         m_executor->add_node(std::move(node));
