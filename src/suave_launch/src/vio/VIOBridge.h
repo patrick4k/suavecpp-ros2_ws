@@ -33,7 +33,7 @@ public:
         m_subscription = this->create_subscription<OdomMsg>("/odom", 10, std::bind(&VIOBridge::callback, this, std::placeholders::_1));
     }
 
-    MavControllerResult start() override;
+    TaskResult start() override;
 
 private:
     double m_heading_rad{double(NAN)};

@@ -28,11 +28,11 @@ public:
 
     virtual void callback(const MsgSharedPtr msg) const = 0;
 
-    MavControllerResult start() override
+    TaskResult start() override
     {
         suave_log << "Starting ROS subscriber" << std::endl;
         rclcpp::spin(this->get_node_base_interface());
-        return MavControllerResult::SUCCESS;
+        return TaskResult::SUCCESS;
     }
 
     void stop() override

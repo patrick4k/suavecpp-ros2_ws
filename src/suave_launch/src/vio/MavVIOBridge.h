@@ -16,7 +16,7 @@ class MavVIOBridge : public IMavController
 public:
     explicit MavVIOBridge(std::shared_ptr<mavsdk::System> system);
 
-    MavControllerResult start() override;
+    TaskResult start() override;
     void stop() override;
 
 private:

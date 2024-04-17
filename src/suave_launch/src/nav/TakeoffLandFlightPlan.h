@@ -13,7 +13,7 @@ public:
     {
     }
 
-    MavControllerResult start() override;
+    TaskResult start() override;
 
     void stop() override
     {

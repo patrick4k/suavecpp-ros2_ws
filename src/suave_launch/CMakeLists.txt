@@ -34,7 +34,7 @@ add_executable(suave_main src/suave_main.cpp
         src/common/IMavController.h
         src/nav/TakeoffLandFlightPlan.cpp
         src/nav/TakeoffLandFlightPlan.h
-        src/common/MavControllerResult.h
+        src/common/TaskResult.h
         src/ros/IRosController.h
         src/ros/RosSubscriber.cpp
         src/ros/RosSubscriber.h
@@ -48,6 +48,8 @@ add_executable(suave_main src/suave_main.cpp
         src/util/Result.h
         src/util/Timer.h
         src/common/ITask.h
+        src/ros/RosNodeSpinner.cpp
+        src/ros/RosNodeSpinner.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)

@@ -124,7 +124,7 @@ MavVIOBridge::MavVIOBridge(std::shared_ptr<System> system) : IMavController(std:
     });
 }
 
-MavControllerResult MavVIOBridge::start()
+TaskResult MavVIOBridge::start()
 {
     m_spin_future = std::async(
         std::launch::async,
@@ -135,7 +135,7 @@ MavControllerResult MavVIOBridge::start()
         }
     );
 
-    return MavControllerResult::SUCCESS;
+    return TaskResult::SUCCESS;
 }
 
 void MavVIOBridge::stop()

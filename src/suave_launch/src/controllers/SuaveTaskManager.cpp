@@ -23,12 +23,12 @@ void SuaveTaskManager::start()
 
     vio_bridge.stop();
 
-    if (flight_plan_result != MavControllerResult::SUCCESS)
+    if (flight_plan_result != TaskResult::SUCCESS)
     {
         std::cerr << "TakeoffLandFlightPlan failed" << std::endl;
     }
 
-    if (vio_result->get() != MavControllerResult::SUCCESS)
+    if (vio_result->get() != TaskResult::SUCCESS)
     {
         std::cerr << "VIOBridge failed" << std::endl;
     }

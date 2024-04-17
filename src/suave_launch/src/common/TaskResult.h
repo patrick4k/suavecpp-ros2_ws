@@ -1,7 +1,7 @@
 #ifndef SYSTEMCONTROLLERRESULT_H
 #define SYSTEMCONTROLLERRESULT_H
 
-enum class MavControllerResult
+enum class TaskResult
 {
     SUCCESS,
     FAILURE,

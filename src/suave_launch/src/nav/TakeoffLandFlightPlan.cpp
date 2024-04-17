@@ -14,9 +14,9 @@ using namespace mavsdk;
 using std::this_thread::sleep_for;
 using std::chrono::seconds;
 
-#define check if (m_should_cancel) return MavControllerResult::CANCELLED;
+#define check if (m_should_cancel) return TaskResult::CANCELLED;
 
-MavControllerResult TakeoffLandFlightPlan::start()
+TaskResult TakeoffLandFlightPlan::start()
 {
     // Make sure we have a telemetry plugin
     auto telemetry = Telemetry{*this->get_system()};
@@ -26,7 +26,7 @@ MavControllerResult TakeoffLandFlightPlan::start()
 
     if (set_rate_result != Telemetry::Result::Success) {
         std::cerr << "Setting rate failed:" << set_rate_result << '\n';
-        return MavControllerResult::FAILURE;
+        return TaskResult::FAILURE;
     }
 
     telemetry.subscribe_position([](Telemetry::Position position) {
@@ -43,7 +43,7 @@ MavControllerResult TakeoffLandFlightPlan::start()
 
     if (arm_result != Action::Result::Success) {
         std::cerr << "Arming failed:" << arm_result << '\n';
-        return MavControllerResult::FAILURE;
+        return TaskResult::FAILURE;
     }
 
     // Take off
@@ -53,7 +53,7 @@ MavControllerResult TakeoffLandFlightPlan::start()
 
     if (takeoff_result != Action::Result::Success) {
         std::cerr << "Takeoff failed:" << takeoff_result << '\n';
-        return MavControllerResult::FAILURE;
+        return TaskResult::FAILURE;
     }
 
     sleep_for(seconds(10));
@@ -63,7 +63,7 @@ MavControllerResult TakeoffLandFlightPlan::start()
     auto offboard_result = offboard.start();
     if (offboard_result != Offboard::Result::Success) {
         std::cerr << "Offboard start failed:" << offboard_result << '\n';
-        return MavControllerResult::FAILURE;
+        return TaskResult::FAILURE;
     }
     sleep_for(seconds(1));
     offboard.set_velocity_body(Offboard::VelocityBodyYawspeed{0, 0, 0, 0});
@@ -78,7 +78,7 @@ MavControllerResult TakeoffLandFlightPlan::start()
 
     if (land_result != Action::Result::Success) {
         std::cerr << "Land failed:" << land_result << '\n';
-        return MavControllerResult::FAILURE;
+        return TaskResult::FAILURE;
     }
 
     // We are relying on auto-disarming but let's keep watching the telemetry for a bit longer.
@@ -86,5 +86,5 @@ MavControllerResult TakeoffLandFlightPlan::start()
     sleep_for(seconds(5));
     std::cout << "Finished...\n";
 
-    return MavControllerResult::SUCCESS;
+    return TaskResult::SUCCESS;
 }

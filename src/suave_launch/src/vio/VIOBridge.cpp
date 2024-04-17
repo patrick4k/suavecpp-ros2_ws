@@ -5,11 +5,11 @@
 #include "VIOBridge.h"
 
 
-MavControllerResult VIOBridge::start()
+TaskResult VIOBridge::start()
 {
     m_executor->add_node(this->get_node_base_interface());
     m_executor->spin();
-    return MavControllerResult::SUCCESS;
+    return TaskResult::SUCCESS;
 }
 
 VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam)
