@@ -22,7 +22,7 @@ public:
         return TaskResult::NOT_IMPLMENTED;
     }
 
-    std::future<TaskResult>* start_in_thread()
+    virtual std::future<TaskResult>* start_in_thread()
     {
         m_async_future = std::async(std::launch::async, &ITask::start, this);
         return &*m_async_future;

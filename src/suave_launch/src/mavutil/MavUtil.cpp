@@ -8,6 +8,8 @@
 #include <iostream>
 #include <thread>
 
+#include "../util/Util.h"
+
 std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk)
 {
     // Connect to the PX4 SITL.
@@ -20,9 +22,7 @@ std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk)
     // Wait until the vehicle is ready.
     while (m_mavsdk.systems().empty())
     {
-
-        std::cout << "Waiting for system to connect...\n";
-
+        suave_log << "Waiting for system to connect...\n";
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 

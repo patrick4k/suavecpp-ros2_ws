@@ -13,7 +13,6 @@ class Timer
 public:
     Timer() = default;
 
-
     void start()
     {
         m_start = std::chrono::system_clock::now();

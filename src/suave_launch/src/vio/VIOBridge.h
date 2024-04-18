@@ -16,20 +16,11 @@ using OdomMsg = nav_msgs::msg::Odometry;
 
 class VIOBridge: public rclcpp::Node {
 public:
-    explicit VIOBridge(std::shared_ptr<System> system) :
+    explicit VIOBridge(std::shared_ptr<System> system, const double& initial_heading_rad) :
         Node("suave_vio_bridge"),
-        m_system(std::move(system))
+        m_system(std::move(system)),
+        m_heading_rad(initial_heading_rad)
     {
-        Telemetry telem{m_system};
-
-        while (std::isnan(m_heading_rad)) {
-            m_heading_rad = telem.heading().heading_deg * M_PI / 180.0;
-            suave_log << "Waiting for initial heading...\n";
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        suave_log << "Initial heading: " << m_heading_rad << " rad\n";
-
         m_subscription = this->create_subscription<OdomMsg>("/odom", 10, std::bind(&VIOBridge::callback, this, std::placeholders::_1));
     }
 

@@ -27,6 +27,7 @@ public:
     }
 
     void start() override;
+    void failsafe();
 
 private:
     Drone m_drone;

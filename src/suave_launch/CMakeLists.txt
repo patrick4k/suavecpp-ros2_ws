@@ -41,8 +41,6 @@ add_executable(suave_main src/suave_main.cpp
         src/vio/VIOBridge.cpp
         src/vio/VIOBridge.h
         src/common/ISuaveController.h
-        src/controllers/SuaveTaskManager.cpp
-        src/controllers/SuaveTaskManager.h
         src/nav/SuaveOffboard.cpp
         src/nav/SuaveOffboard.h
         src/util/Result.h
@@ -56,6 +54,8 @@ add_executable(suave_main src/suave_main.cpp
         src/controllers/SuaveVIOTestFlight.h
         src/mavutil/MavUtil.h
         src/mavutil/MavUtil.cpp
+        src/common/SystemTask.cpp
+        src/common/SystemTask.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
