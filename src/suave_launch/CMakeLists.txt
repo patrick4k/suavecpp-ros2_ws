@@ -29,8 +29,6 @@ add_executable(suave_main src/suave_main.cpp
         src/common
         src/util/Util.cpp
         src/util/Util.h
-        src/vio/MavVIOBridge.h
-        src/vio/MavVIOBridge.cpp
         src/common/IMavController.h
         src/nav/TakeoffLandFlightPlan.cpp
         src/nav/TakeoffLandFlightPlan.h
