@@ -11,6 +11,7 @@ public:
     virtual ~ISuaveController() = default;
 
     virtual void start() = 0;
+    virtual void shutdown() = 0;
 
 protected:
     mavsdk::Mavsdk m_mavsdk{};

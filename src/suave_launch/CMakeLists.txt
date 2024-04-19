@@ -21,7 +21,10 @@ endmacro()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(MAVSDK REQUIRED)
+find_package(PCL REQUIRED)
+find_package(pcl_conversions REQUIRED)
 
 # SUAVE_MAIN
 add_executable(suave_main src/suave_main.cpp
@@ -54,10 +57,17 @@ add_executable(suave_main src/suave_main.cpp
         src/mavutil/MavUtil.cpp
         src/common/SystemTask.cpp
         src/common/SystemTask.h
+        src/mavutil/TelemetryProperty.cpp
+        src/mavutil/TelemetryProperty.h
+        src/vio/CloudExporter.cpp
+        src/vio/CloudExporter.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
 ament_target_dependencies(suave_main nav_msgs)
+ament_target_dependencies(suave_main sensor_msgs)
+ament_target_dependencies(suave_main PCL)
+ament_target_dependencies(suave_main pcl_conversions)
 target_link_libraries(suave_main
         MAVSDK::mavsdk
 )

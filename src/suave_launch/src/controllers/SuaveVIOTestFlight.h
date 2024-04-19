@@ -4,19 +4,10 @@
 
 #ifndef SUAVEVIOTESTFLIGHT_H
 #define SUAVEVIOTESTFLIGHT_H
-#include <connection_result.h>
-#include <iostream>
-#include <thread>
 
 #include "../common/ISuaveController.h"
 #include "../mavutil/Drone.h"
 #include "../mavutil/MavUtil.h"
-
-
-namespace mavsdk
-{
-    enum class ConnectionResult;
-}
 
 class SuaveVIOTestFlight: public ISuaveController {
 public:
@@ -27,9 +18,10 @@ public:
     }
 
     void start() override;
-    void failsafe();
+    void shutdown() override;
 
 private:
+    static void endtask();
     Drone m_drone;
 };
 

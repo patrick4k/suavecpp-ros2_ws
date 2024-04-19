@@ -6,12 +6,12 @@
 #define RESULT_H
 #include <optional>
 #include <string>
+#include "Util.h"
 
 template<typename TOk, typename TErr = std::string>
 class Result
 {
 public:
-    Result() : m_err{"Uninitialized Result"} {}
     Result(TOk ok) : m_ok(ok) {}
     Result(TErr err) : m_err(err) {}
 
@@ -21,13 +21,15 @@ public:
     [[nodiscard]]
     bool is_err() const { return m_err.has_value(); }
 
+    explicit operator bool() const { return is_ok(); }
+
     [[nodiscard]]
     TOk unwrap() const
     {
         if (!m_ok)
         {
             if (m_err)
-                suave_err << m_err.unwrap() << std::endl;
+                suave_err << m_err.value() << std::endl;
             else
                 suave_err << "Unknown error on Result::unwrap()" << std::endl;
         }

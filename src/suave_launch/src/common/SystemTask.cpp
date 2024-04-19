@@ -4,12 +4,14 @@
 
 #include "SystemTask.h"
 
+#include <cstring>
+
 TaskResult SystemTask::start()
 {
     std::string command = "bash -c '";
     for (const auto& subcommand: m_commands)
     {
-        if (subcommand == m_commands.back()) command += subcommand + "'";
+        if (subcommand == m_commands.back()) command += subcommand + (m_should_print_output? "'" : " > /dev/null 2>&1'");
         else command += subcommand + "&&";
     }
     suave_log << "Executing command: " << command << std::endl;
@@ -61,8 +63,8 @@ std::future<TaskResult>* SystemTask::start_in_thread()
     pid_t pid = fork();
 
     if (pid == 0) {
-        m_result = this->start();
-        exit(m_result == TaskResult::SUCCESS ? 0 : 1);
+        auto result = this->start();
+        exit(result == TaskResult::SUCCESS ? 0 : 1);
     }
     if (pid < 0) {
         suave_err << "Failed to fork process" << std::endl;

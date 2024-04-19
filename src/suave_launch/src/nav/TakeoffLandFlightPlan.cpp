@@ -8,7 +8,6 @@
 
 #include <chrono>
 #include <thread>
-#include <plugins/mocap/mocap.h>
 
 using namespace mavsdk;
 using std::this_thread::sleep_for;

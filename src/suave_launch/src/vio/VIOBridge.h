@@ -27,10 +27,9 @@ public:
 private:
     std::shared_ptr<System> m_system;
     double m_heading_rad{double(NAN)};
+
     using Subscription = rclcpp::Subscription<OdomMsg>;
     std::optional<Subscription::SharedPtr> m_subscription{};
-    using Executor = rclcpp::executors::SingleThreadedExecutor;
-    std::shared_ptr<Executor> m_executor = std::make_shared<Executor>();
 
     struct MocapMessages
     {
