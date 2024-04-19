@@ -14,6 +14,12 @@
 #define try_mav(act, success) \
 {\
     suave_log << "Starting " << #act << std::endl; \
+    if (m_end_controller)     \
+    {\
+        suave_err << "m_end_controller = true" << std::endl; \
+        this->shutdown();\
+        return;\
+    }\
     const auto act_result = act; \
     if (act_result != success) \
     { \
@@ -86,13 +92,17 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.offboard().start())
     try_action(m_drone.action().arm())
     sleep(3)
-    try_offboard(m_drone.set_relative_position_ned(0, 0, -1))
-    sleep(10)
-    try_offboard(m_drone.offboard_land())
+    try_action(m_drone.action().disarm())
 
     // Wait for drone to land
-    while (m_drone.in_air()) sleep(1)
-    try_action(m_drone.action().disarm())
+    int elapse_sec = 0;
+    while (m_drone.in_air())
+    {
+        suave_log << "Waiting for drone to land, elapse_sec: " << elapse_sec << std::endl;
+        sleep(1)
+        elapse_sec++;
+    }
+//    try_action(m_drone.action().disarm())
 
     // Flight plan end ----------------------------------------------------------------
 
@@ -101,6 +111,9 @@ void SuaveVIOTestFlight::start()
 
 void SuaveVIOTestFlight::shutdown()
 {
+    bool is_first_shutdown = false;
+    if (m_end_controller) is_first_shutdown = true;
+    m_end_controller = true;
     suave_warn << "Suave VIO Test Shutdown" << std::endl;
     if (m_drone.in_air())
     {
@@ -115,7 +128,7 @@ void SuaveVIOTestFlight::shutdown()
         }
     }
 
-    endtask();
+    if (is_first_shutdown) endtask();
 }
 
 void SuaveVIOTestFlight::endtask()
@@ -128,5 +141,4 @@ void SuaveVIOTestFlight::endtask()
             task->stop();
         }
     }
-    s_tasks.clear();
 }

@@ -25,26 +25,26 @@ void SystemTask::stop()
         suave_log << "Stopping process: " << m_pid << std::endl;
 
         // Send SIGKILL signal to the child process
-        int killResult = kill(m_pid, SIGTERM);
+        int killResult = kill(m_pid, SIGINT);
         if (killResult == -1) {
-            suave_err << "Failed to send SIGKILL signal to process " << m_pid << ": " << strerror(errno) << std::endl;
+            suave_err << "Failed to send SIGINT signal to process " << m_pid << ": " << strerror(errno) << std::endl;
             return;
         }
 
-        suave_log << "Waiting for process: " << m_pid << " to terminate" << std::endl;
+        suave_log << "Waiting for process: " << m_pid << " to interrupt" << std::endl;
 
         // Wait for the child process to terminate
         int status;
         int waitResult = waitpid(m_pid, &status, 0);
         if (waitResult == -1) {
-            suave_err << "Failed to wait for process termination: " << strerror(errno) << std::endl;
+            suave_err << "Failed to wait for process interrupt: " << strerror(errno) << std::endl;
             return;
         }
 
         if (WIFSIGNALED(status)) {
-            suave_log << "Process: " << m_pid << " terminated by signal " << WTERMSIG(status) << std::endl;
+            suave_log << "Process: " << m_pid << " interrupted by signal " << WTERMSIG(status) << std::endl;
         } else {
-            suave_log << "Process: " << m_pid << " terminated" << std::endl;
+            suave_log << "Process: " << m_pid << " interrupted" << std::endl;
         }
 
         // Reset PID after process termination

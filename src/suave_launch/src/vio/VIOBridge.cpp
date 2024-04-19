@@ -127,7 +127,7 @@ void VIOBridge::callback(const OdomMsg::SharedPtr msg)
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
     const auto odom_result = mocap.set_odometry(odometry);
 
-    PrintMocapOdometry(odometry);
+//    PrintMocapOdometry(odometry);
 
     if (!HandleMocapResult("Mocap::VisionPositionEstimate", vpe_result)
         || !HandleMocapResult("Mocap::Odometry", odom_result))

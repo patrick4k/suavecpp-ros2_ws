@@ -22,6 +22,7 @@ public:
 
 private:
     static void endtask();
+    bool m_end_controller{false};
     Drone m_drone;
 };
 

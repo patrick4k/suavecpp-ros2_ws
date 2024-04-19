@@ -12,16 +12,18 @@ void CloudExporter::SavePCD()
     executor.add_node(exporter.get_node_base_interface());
     while (!exporter.m_saved)
     {
+        suave_log << "Waiting for /cloud_map topic" << std::endl;
         executor.spin_once();
+        sleep(1);
     }
     suave_log << "Cloud saved" << std::endl;
 }
 
 void CloudExporter::callback(const PointCloudMsg::SharedPtr msg)
 {
-    RCLCPP_INFO(this->get_logger(), "Received point cloud message with %d points", msg->width * msg->height);
     try
     {
+        RCLCPP_INFO(this->get_logger(), "Received point cloud message with %d points", msg->width * msg->height);
         pcl::PointCloud<pcl::PointXYZ> cloud{};
         fromROSMsg(*msg, cloud);
         auto now = std::chrono::system_clock::now();
