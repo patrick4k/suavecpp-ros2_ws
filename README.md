@@ -13,6 +13,12 @@ source ./install setup.bash
 ```
 
 ## To run
+Launch PX4 SITL
+```
+cd PX4-Autopilot
+make px4_sitl gz_x500
+```
+Launch suave_main
 ```
 ros2 run suave_launch suave_main
 ```
