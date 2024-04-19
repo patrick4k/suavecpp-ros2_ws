@@ -47,6 +47,8 @@ public:
     // Blocking until next position update
     Offboard::Result set_relative_position_ned(const float& n, const float& e, const float& d);
 
+    Offboard::Result offboard_land();
+
     Offboard::Result set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg);
 
 private:

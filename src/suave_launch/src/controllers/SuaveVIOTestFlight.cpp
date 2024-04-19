@@ -69,14 +69,10 @@ void SuaveVIOTestFlight::start()
     suave_log << "Move the drone around to create initial map" << std::endl;
     await_confirmation;
 
-    CloudExporter::SavePCD();
+    suave_log << "Starting VIO" << std::endl;
+    spinner.start_in_thread();
 
-    return;
-
-    // suave_log << "Starting VIO" << std::endl;
-    // spinner.start_in_thread();
-
-    // sleep(5)
+    sleep(5)
 
     suave_log << "Ready for flight?" << std::endl;
     await_confirmation;
@@ -89,14 +85,10 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.set_relative_position_ned(0, 0, 0))
     try_offboard(m_drone.offboard().start())
     try_action(m_drone.action().arm())
-
-    try_offboard(m_drone.set_relative_position_ned(0, 0, -2))
+    sleep(3)
+    try_offboard(m_drone.set_relative_position_ned(0, 0, -1))
     sleep(10)
-    try_offboard(m_drone.offboard().set_velocity_body({1, 0, 0, 360.0/5}));
-    sleep(5)
-    try_offboard(m_drone.offboard().set_velocity_body({0, 0, 0, 0}));
-    sleep(1)
-    try_action(m_drone.action().land())
+    try_offboard(m_drone.offboard_land())
 
     // Wait for drone to land
     while (m_drone.in_air()) sleep(1)
@@ -128,6 +120,7 @@ void SuaveVIOTestFlight::shutdown()
 
 void SuaveVIOTestFlight::endtask()
 {
+    CloudExporter::SavePCD();
     for (auto task : s_tasks)
     {
         if (task)

@@ -21,6 +21,12 @@ Offboard::Result Drone::set_relative_position_ned(const float& n, const float& e
     return offboard().set_position_ned({north_m + n, east_m + e, down_m + d, yaw});
 }
 
+Offboard::Result Drone::offboard_land()
+{
+    const auto yaw = m_attitude_euler.wait_for_next().unwrap().yaw_deg;
+    return offboard().set_velocity_ned({0, 0, 0.1, yaw});
+}
+
 Offboard::Result Drone::set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg)
 {
     // TODO: Implement transformation using initial heading
