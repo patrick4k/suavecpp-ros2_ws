@@ -23,7 +23,12 @@ int main(int argc, char **argv)
     {
         std::signal(sig, signal_handler);
     }
-    s_controller.start();
+    try {
+        s_controller.start();
+    } catch (const std::exception &e) {
+        suave_err << "Caught exception: " << e.what() << std::endl;
+    }
+    s_controller.shutdown();
     rclcpp::shutdown();
     suave_log << "Exiting suave_main" << std::endl;
 }

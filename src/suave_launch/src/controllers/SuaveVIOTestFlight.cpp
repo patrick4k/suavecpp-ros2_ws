@@ -109,7 +109,7 @@ void SuaveVIOTestFlight::start()
 
 void SuaveVIOTestFlight::shutdown()
 {
-    suave_warn << "Failsafe activated" << std::endl;
+    suave_warn << "Suave VIO Test Shutdown" << std::endl;
     if (m_drone.in_air())
     {
         if (m_drone.action().land() != Action::Result::Success)
