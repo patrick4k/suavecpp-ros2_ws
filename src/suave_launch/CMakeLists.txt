@@ -23,7 +23,7 @@ find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(MAVSDK REQUIRED)
-find_package(PCL REQUIRED)
+find_package(PCL 1.2 REQUIRED)
 find_package(pcl_conversions REQUIRED)
 
 # SUAVE_MAIN
@@ -64,6 +64,11 @@ ament_target_dependencies(suave_main pcl_conversions)
 target_link_libraries(suave_main
         MAVSDK::mavsdk
 )
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+target_link_libraries(suave_main ${PCL_LIBRARIES})
+
 include_compile_install(suave_main)
 
 if(BUILD_TESTING)

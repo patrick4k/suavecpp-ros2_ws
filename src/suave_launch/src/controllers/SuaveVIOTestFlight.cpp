@@ -6,6 +6,7 @@
 
 #include "../common/SystemTask.h"
 #include "../ros/RosNodeSpinner.h"
+#include "../vio/CloudExporter.h"
 #include "../vio/VIOBridge.h"
 
 #define sleep(sec) std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(sec * 1e6)));
@@ -47,7 +48,7 @@ void SuaveVIOTestFlight::start()
 
     // Create ROS spinner and add vio bridge node
     RosNodeSpinner spinner{};
-    std::shared_ptr<VIOBridge> vio_bridge_node = std::make_shared<VIOBridge>(m_drone.system(), m_drone.initial_heading_rad());
+    const auto vio_bridge_node = std::make_shared<VIOBridge>(m_drone.system(), m_drone.initial_heading_rad());
     spinner.add_node(vio_bridge_node);
 
     // Add task to s_tasks
@@ -57,11 +58,25 @@ void SuaveVIOTestFlight::start()
         &spinner
     };
 
-    // Start tasks
-    for (const auto task : s_tasks)
-    {
-        // task->start_in_thread();
-    }
+    suave_log << "Ready to start?" << std::endl;
+    await_confirmation;
+
+    suave_log << "Starting realsense and rtabmap" << std::endl;
+    realsense_task.start_in_thread();
+    sleep(2)
+    rtabmap_task.start_in_thread();
+
+    suave_log << "Move the drone around to create initial map" << std::endl;
+    await_confirmation;
+
+    CloudExporter::SavePCD();
+
+    return;
+
+    // suave_log << "Starting VIO" << std::endl;
+    // spinner.start_in_thread();
+
+    // sleep(5)
 
     suave_log << "Ready for flight?" << std::endl;
     await_confirmation;
