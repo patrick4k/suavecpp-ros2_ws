@@ -32,19 +32,25 @@ public:
         return *m_value;
     }
 
-    Result<T> get_within(double elapse_sec = 1.0)
+    Result<T> get_within(double elapse_sec = 1.0) const
     {
-        if (m_timer.has_been(elapse_sec))
+        if (m_timer_since_last_update.has_been(elapse_sec))
         {
             return "TelemetryProperty::get_within(), does not have the value within " + std::to_string(elapse_sec) + " seconds! Returning the last value.";
         }
         return get();
     }
 
-    Result<T> wait_for_next(double refresh_rate_hz = 1.0)
+    Result<T> wait_for_next(const double timeout_sec = 60, const double refresh_rate_hz = 1) const
     {
-        while (m_timer.has_been(refresh_rate_hz))
+        Timer timer{};
+        timer.start();
+        while (m_timer_since_last_update.has_been(1/refresh_rate_hz))
         {
+            if (timer.has_been(timeout_sec))
+            {
+                return "TelemetryProperty::wait_for_next(), timeout after " + std::to_string(timeout_sec) + " seconds!";
+            }
             std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(1/refresh_rate_hz * 1e6 / 10)));
         }
         return get();
@@ -53,7 +59,7 @@ public:
     void set(T value)
     {
         m_value = value;
-        m_timer.start();
+        m_timer_since_last_update.start();
         if (m_callback.has_value())
         {
             m_callback.value()(m_value.value());
@@ -61,7 +67,7 @@ public:
     }
 
 private:
-    Timer m_timer{};
+    Timer m_timer_since_last_update{};
     std::optional<T> m_value{};
     std::optional<TCallback> m_callback{};
 };

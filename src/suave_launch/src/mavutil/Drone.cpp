@@ -14,7 +14,14 @@ Drone::Drone(std::shared_ptr<System> system): m_system(std::move(system))
     suave_log << "Initial heading: " << m_initial_heading_rad << " rad\n";
 }
 
-Offboard::Result Drone::set_position_frd(const double& f, const double& r, const double& d, const double& yaw_deg)
+Offboard::Result Drone::set_relative_position_ned(const float& n, const float& e, const float& d)
+{
+    const auto [north_m, east_m, down_m] = m_position_velocity_ned.wait_for_next().unwrap().position;
+    const auto yaw = m_attitude_euler.wait_for_next(1).unwrap().yaw_deg;
+    return offboard().set_position_ned({north_m + n, east_m + e, down_m + d, yaw});
+}
+
+Offboard::Result Drone::set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg)
 {
     // TODO: Implement transformation using initial heading
     return Offboard::Result::Unknown;

@@ -9,9 +9,21 @@
 #include "../ros/RosNodeSpinner.h"
 #include "../vio/VIOBridge.h"
 
-#define sleep(sec) std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(sec * 1e6)))
+#define sleep(sec) std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(sec * 1e6)));
 
-#define try_mav(act, success) if (act != success) { suave_err << #act << " failed" << std::endl; this->shutdown(); return; }
+#define try_mav(act, success) \
+{\
+    suave_log << "Starting " << #act << std::endl; \
+    const auto act_result = act; \
+    if (act_result != success) \
+    { \
+        suave_err << #act << " failed: " << act_result << std::endl; \
+        this->shutdown(); \
+        return; \
+    } \
+    suave_log << #act << ": " << act_result << std::endl;\
+}
+
 #define try_action(act) try_mav(act, Action::Result::Success)
 #define try_offboard(act) try_mav(act, Offboard::Result::Success)
 
@@ -49,17 +61,33 @@ void SuaveVIOTestFlight::start()
     // Start tasks
     for (const auto task : s_tasks)
     {
-        task->start_in_thread();
+        // task->start_in_thread();
     }
 
+    suave_log << "Ready for flight?" << std::endl;
     await_confirmation;
 
     suave_log << "Starting flight plan" << std::endl;
 
     // Flight plan start ---------------------------------------------------------------
-    // try_action(m_drone.action().arm())
-    // sleep(30);
-    // try_action(m_drone.action().disarm())
+
+    // Start offboard and arm
+    try_offboard(m_drone.set_relative_position_ned(0, 0, 0))
+    try_offboard(m_drone.offboard().start())
+    try_action(m_drone.action().arm())
+
+    try_offboard(m_drone.set_relative_position_ned(0, 0, -2))
+    sleep(10)
+    try_offboard(m_drone.offboard().set_velocity_body({1, 0, 0, 360.0/5}));
+    sleep(5)
+    try_offboard(m_drone.offboard().set_velocity_body({0, 0, 0, 0}));
+    sleep(1)
+    try_action(m_drone.action().land())
+
+    // Wait for drone to land
+    while (m_drone.in_air()) sleep(1)
+    try_action(m_drone.action().disarm())
+
     // Flight plan end ----------------------------------------------------------------
 
     endtask();
@@ -93,4 +121,5 @@ void SuaveVIOTestFlight::endtask()
             task->stop();
         }
     }
+    s_tasks.clear();
 }
