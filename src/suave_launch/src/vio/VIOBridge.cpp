@@ -4,6 +4,7 @@
 
 #include "VIOBridge.h"
 
+#include "../util/Util.h"
 
 VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam)
 {

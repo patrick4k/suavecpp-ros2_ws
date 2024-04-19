@@ -5,7 +5,6 @@
 #include "SuaveVIOTestFlight.h"
 
 #include "../common/SystemTask.h"
-#include "../nav/TakeoffLandFlightPlan.h"
 #include "../ros/RosNodeSpinner.h"
 #include "../vio/VIOBridge.h"
 

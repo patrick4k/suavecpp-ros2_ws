@@ -8,8 +8,7 @@
 #include <plugins/mocap/mocap.h>
 #include <plugins/telemetry/telemetry.h>
 #include <cmath>
-
-#include "../ros/RosSubscriber.h"
+#include <rclcpp/rclcpp.hpp>
 
 using namespace mavsdk;
 using OdomMsg = nav_msgs::msg::Odometry;

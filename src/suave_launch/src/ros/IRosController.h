@@ -4,12 +4,11 @@
 
 #ifndef IROSSUBSCRIBER_H
 #define IROSSUBSCRIBER_H
-#include "../common/IMavController.h"
 
-class IRosController: public IMavController
+class IRosController: public ITask
 {
 public:
-    explicit IRosController(std::shared_ptr<mavsdk::System> system) : IMavController(std::move(system))
+    explicit IRosController() : ITask()
     {
     }
 

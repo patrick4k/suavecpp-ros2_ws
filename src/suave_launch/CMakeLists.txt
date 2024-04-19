@@ -32,18 +32,11 @@ add_executable(suave_main src/suave_main.cpp
         src/common
         src/util/Util.cpp
         src/util/Util.h
-        src/common/IMavController.h
-        src/nav/TakeoffLandFlightPlan.cpp
-        src/nav/TakeoffLandFlightPlan.h
         src/common/TaskResult.h
         src/ros/IRosController.h
-        src/ros/RosSubscriber.cpp
-        src/ros/RosSubscriber.h
         src/vio/VIOBridge.cpp
         src/vio/VIOBridge.h
         src/common/ISuaveController.h
-        src/nav/SuaveOffboard.cpp
-        src/nav/SuaveOffboard.h
         src/util/Result.h
         src/util/Timer.h
         src/common/ITask.h
