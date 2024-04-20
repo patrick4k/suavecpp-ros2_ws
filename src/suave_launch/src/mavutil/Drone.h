@@ -51,6 +51,10 @@ public:
 
     Offboard::Result set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg);
 
+    // Tunes
+    Tune::Result play_waiting_tune();
+    Tune::Result play_ready_tune();
+
 private:
     // Mavsdk
     std::shared_ptr<System> m_system{};

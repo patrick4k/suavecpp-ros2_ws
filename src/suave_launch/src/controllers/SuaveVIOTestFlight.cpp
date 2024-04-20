@@ -32,6 +32,7 @@
 
 #define try_action(act) try_mav(act, Action::Result::Success)
 #define try_offboard(act) try_mav(act, Offboard::Result::Success)
+#define try_tune(act) try_mav(act, Tune::Result::Success)
 
 std::vector<ITask*> s_tasks{};
 
@@ -66,6 +67,7 @@ void SuaveVIOTestFlight::start()
         &spinner
     };
 
+    try_tune(m_drone.play_waiting_tune())
     suave_log << "Ready to start?" << std::endl;
     await_confirmation;
 
@@ -74,6 +76,7 @@ void SuaveVIOTestFlight::start()
     sleep(2)
     rtabmap_task.start_in_thread();
 
+    try_tune(m_drone.play_waiting_tune())
     suave_log << "Move the drone around to create initial map" << std::endl;
     await_confirmation;
 
@@ -82,6 +85,7 @@ void SuaveVIOTestFlight::start()
 
     sleep(5)
 
+    try_tune(m_drone.play_ready_tune())
     suave_log << "Ready for flight?" << std::endl;
     await_confirmation;
 

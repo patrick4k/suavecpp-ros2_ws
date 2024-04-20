@@ -32,3 +32,20 @@ Offboard::Result Drone::set_position_frd(const float& f, const float& r, const f
     // TODO: Implement transformation using initial heading
     return Offboard::Result::Unknown;
 }
+
+Tune::Result Drone::play_waiting_tune()
+{
+    Tune::SongElement note = Tune::SongElement::NoteC;
+    Tune::TuneDescription waiting_tune{{note, note, note}, 90};
+    return tune().play_tune(waiting_tune);
+}
+
+Tune::Result Drone::play_ready_tune()
+{
+    Tune::SongElement c = Tune::SongElement::NoteC;
+    Tune::SongElement d = Tune::SongElement::NoteD;
+    Tune::SongElement e = Tune::SongElement::NoteE;
+    Tune::SongElement b = Tune::SongElement::NoteB;
+    Tune::TuneDescription ready_tune{{c, d, e, b}, 90};
+    return tune().play_tune(ready_tune);
+}
