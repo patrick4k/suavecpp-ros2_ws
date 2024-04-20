@@ -97,11 +97,9 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.set_relative_position_ned(0, 0, 0))
     try_offboard(m_drone.offboard().start())
     try_action(m_drone.action().arm())
-    try_offboard(m_drone.set_relative_position_ned(0,0,-2))
+    // try_offboard(m_drone.set_relative_position_ned(0,0,-2))
     sleep(10)
-    try_offboard(m_drone.offboard().set_velocity_body({1, 1, 0, 360}))
-    sleep(10)
-    try_offboard(m_drone.offboard_land())
+    // try_offboard(m_drone.offboard_land())
 
     // Wait for drone to land
     int elapse_sec = 0;
@@ -114,9 +112,8 @@ void SuaveVIOTestFlight::start()
 //    try_action(m_drone.action().disarm())
 
     // Flight plan end ----------------------------------------------------------------
-
-    endtask();
     cloud_exporter_node->export_cloud();
+    endtask();
 }
 
 void SuaveVIOTestFlight::shutdown()

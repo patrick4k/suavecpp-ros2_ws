@@ -24,7 +24,7 @@ Offboard::Result Drone::set_relative_position_ned(const float& n, const float& e
 Offboard::Result Drone::offboard_land()
 {
     const auto yaw = m_attitude_euler.wait_for_next().unwrap().yaw_deg;
-    return offboard().set_velocity_ned({0, 0, 0.1, yaw});
+    return offboard().set_velocity_ned({0, 0, 0.5, yaw});
 }
 
 Offboard::Result Drone::set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg)
