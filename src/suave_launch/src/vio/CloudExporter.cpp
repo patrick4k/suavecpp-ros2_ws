@@ -4,38 +4,33 @@
 
 #include "CloudExporter.h"
 
-void CloudExporter::SavePCD()
+void CloudExporter::export_cloud() const
 {
-    suave_log << "Saving cloud" << std::endl;
-    CloudExporter exporter{};
-    rclcpp::executors::SingleThreadedExecutor executor{};
-    executor.add_node(exporter.get_node_base_interface());
-    while (!exporter.m_saved)
+    suave_log << "Exporting cloud" << std::endl;
+    if (m_msg == nullptr)
     {
-        suave_log << "Waiting for /cloud_map topic" << std::endl;
-        executor.spin_once();
-        sleep(1);
+        suave_err << "Cannot export cloud: m_msg is null" << std::endl;
+        return;
     }
-    suave_log << "Cloud saved" << std::endl;
-}
 
-void CloudExporter::callback(const PointCloudMsg::SharedPtr msg)
-{
     try
     {
-        RCLCPP_INFO(this->get_logger(), "Received point cloud message with %d points", msg->width * msg->height);
         pcl::PointCloud<pcl::PointXYZ> cloud{};
-        fromROSMsg(*msg, cloud);
-        auto now = std::chrono::system_clock::now();
-        auto now_c = std::chrono::system_clock::to_time_t(now);
+        fromROSMsg(*m_msg, cloud);
+        const auto now = std::chrono::system_clock::now();
+        const auto now_c = std::chrono::system_clock::to_time_t(now);
         std::stringstream ss;
-        ss << std::put_time(std::localtime(&now_c), "%Y%m%d_%H%M%S");
-        std::string filename = "/home/suave/Data/cloud_" + ss.str() + ".pcd";
+        ss << std::put_time(std::localtime(&now_c), "%Y-%m-%d_%H-%M-%S");
+        const std::string filename = "/home/suave/Data/cloud_" + ss.str() + ".pcd";
         pcl::io::savePCDFileASCII(filename, cloud);
     }
     catch (const std::exception& e)
     {
         suave_err << "Error saving cloud: " << e.what() << std::endl;
     }
-    m_saved = true;
+}
+
+void CloudExporter::callback(const PointCloudMsg::SharedPtr msg)
+{
+    m_msg = msg;
 }

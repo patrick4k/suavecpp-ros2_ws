@@ -52,10 +52,12 @@ void SuaveVIOTestFlight::start()
         }
     };
 
-    // Create ROS spinner and add vio bridge node
+    // Create ROS spinner and add vio bridge and cloud exporter node
     RosNodeSpinner spinner{};
     const auto vio_bridge_node = std::make_shared<VIOBridge>(m_drone.system(), m_drone.initial_heading_rad());
+    const auto cloud_exporter_node = std::make_shared<CloudExporter>();
     spinner.add_node(vio_bridge_node);
+    spinner.add_node(cloud_exporter_node);
 
     // Add task to s_tasks
     s_tasks = {
@@ -91,8 +93,11 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.set_relative_position_ned(0, 0, 0))
     try_offboard(m_drone.offboard().start())
     try_action(m_drone.action().arm())
-    sleep(3)
-    try_action(m_drone.action().disarm())
+    try_offboard(m_drone.set_relative_position_ned(0,0,-2))
+    sleep(10)
+    try_offboard(m_drone.offboard().set_velocity_body({1, 1, 0, 360}))
+    sleep(10)
+    try_offboard(m_drone.offboard_land())
 
     // Wait for drone to land
     int elapse_sec = 0;
@@ -107,6 +112,7 @@ void SuaveVIOTestFlight::start()
     // Flight plan end ----------------------------------------------------------------
 
     endtask();
+    cloud_exporter_node->export_cloud();
 }
 
 void SuaveVIOTestFlight::shutdown()
@@ -133,7 +139,6 @@ void SuaveVIOTestFlight::shutdown()
 
 void SuaveVIOTestFlight::endtask()
 {
-    CloudExporter::SavePCD();
     for (auto task : s_tasks)
     {
         if (task)

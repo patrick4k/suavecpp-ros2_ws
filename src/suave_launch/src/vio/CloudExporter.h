@@ -12,18 +12,19 @@
 
 class CloudExporter final : public rclcpp::Node {
     using PointCloudMsg = sensor_msgs::msg::PointCloud2;
+
 public:
     CloudExporter() : Node("suave_cloud_exporter")
     {
         m_subscription = this->create_subscription<PointCloudMsg>("/cloud_map", 10, std::bind(&CloudExporter::callback, this, std::placeholders::_1));
     }
 
-    static void SavePCD();
+    void export_cloud() const;
 
 private:
     using Subscription = rclcpp::Subscription<PointCloudMsg>;
-    std::optional<Subscription::SharedPtr> m_subscription{};
-    bool m_saved{false};
+    Subscription::SharedPtr m_subscription{nullptr};
+    PointCloudMsg::SharedPtr m_msg{nullptr};
 
     void callback(const PointCloudMsg::SharedPtr msg);
 };

@@ -25,7 +25,7 @@ void SystemTask::stop()
         suave_log << "Stopping process: " << m_pid << std::endl;
 
         // Send SIGKILL signal to the child process
-        int killResult = kill(m_pid, SIGINT);
+        const int killResult = kill(m_pid, SIGINT);
         if (killResult == -1) {
             suave_err << "Failed to send SIGINT signal to process " << m_pid << ": " << strerror(errno) << std::endl;
             return;
@@ -35,7 +35,7 @@ void SystemTask::stop()
 
         // Wait for the child process to terminate
         int status;
-        int waitResult = waitpid(m_pid, &status, 0);
+        const int waitResult = waitpid(m_pid, &status, 0);
         if (waitResult == -1) {
             suave_err << "Failed to wait for process interrupt: " << strerror(errno) << std::endl;
             return;
@@ -60,10 +60,10 @@ std::future<TaskResult>* SystemTask::start_in_thread()
         return nullptr;
     }
 
-    pid_t pid = fork();
+    const pid_t pid = fork();
 
     if (pid == 0) {
-        auto result = this->start();
+        const auto result = this->start();
         exit(result == TaskResult::SUCCESS ? 0 : 1);
     }
     if (pid < 0) {
