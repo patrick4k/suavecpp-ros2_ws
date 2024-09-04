@@ -44,6 +44,8 @@ public:
         return m_in_air.get().unwrap();
     }
 
+    Offboard::Result offboard_setpoint();
+
     // Blocking until next position update
     Offboard::Result set_relative_position_ned(const float& n, const float& e, const float& d);
 

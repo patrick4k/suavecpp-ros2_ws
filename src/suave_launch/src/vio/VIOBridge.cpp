@@ -121,7 +121,6 @@ void PrintMocapOdometry(const Mocap::Odometry& odometry) {
 
 void VIOBridge::callback(const OdomMsg::SharedPtr msg)
 {
-    suave_log << "VIOBridge::callback()" << std::endl;
     const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading_rad);
     const Mocap mocap{m_system};
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);

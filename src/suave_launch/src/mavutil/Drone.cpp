@@ -3,15 +3,31 @@
 //
 
 #include "Drone.h"
+#include <cmath>
 
 Drone::Drone(std::shared_ptr<System> system): m_system(std::move(system))
 {
+    Timer timer{};
+    timer.start();
     while (std::isnan(m_initial_heading_rad)) {
         m_initial_heading_rad = m_telemetry.heading().heading_deg * M_PI / 180.0;
         suave_log << "Waiting for initial heading...\n";
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (timer.has_been(3)) 
+        {
+            suave_log << "Input initial heading in degrees: ";
+            double initial_heading;
+            std::cin >> initial_heading;
+            m_initial_heading_rad = initial_heading * M_PI / 180.0;
+            break;
+        }
     }
     suave_log << "Initial heading: " << m_initial_heading_rad << " rad\n";
+}
+
+Offboard::Result Drone::offboard_setpoint()
+{
+    return offboard().set_attitude({0, 0, 0, 0});
 }
 
 Offboard::Result Drone::set_relative_position_ned(const float& n, const float& e, const float& d)
