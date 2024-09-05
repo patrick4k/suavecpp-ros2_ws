@@ -21,6 +21,7 @@ endmacro()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(MAVSDK REQUIRED)
 find_package(PCL 1.2 REQUIRED)
@@ -54,10 +55,15 @@ add_executable(suave_main src/suave_main.cpp
         src/mavutil/TelemetryProperty.h
         src/vio/CloudExporter.cpp
         src/vio/CloudExporter.h
+        src/controllers/SuaveMaskingController.cpp
+        src/controllers/SuaveMaskingController.h
+        src/masking_pid/MaskingSubscriber.cpp
+        src/masking_pid/MaskingSubscriber.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)
 ament_target_dependencies(suave_main nav_msgs)
+ament_target_dependencies(suave_main geometry_msgs)
 ament_target_dependencies(suave_main sensor_msgs)
 ament_target_dependencies(suave_main PCL)
 ament_target_dependencies(suave_main pcl_conversions)
