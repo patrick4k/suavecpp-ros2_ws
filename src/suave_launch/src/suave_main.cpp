@@ -1,6 +1,7 @@
 #include <csignal>
 #include <rclcpp/utilities.hpp>
 
+#include "controllers/GazeboSwarmTest.h"
 #include "controllers/SuaveVIOTestFlight.h"
 
 SuaveVIOTestFlight s_controller{};
@@ -18,7 +19,7 @@ int main(int argc, char **argv)
 {
     suave_log << "Starting suave_main" << std::endl;
     rclcpp::init(argc, argv);
-    std::vector signals = {SIGINT, SIGTERM, SIGQUIT};
+    std::vector signals = { SIGINT, SIGTERM, SIGQUIT };
     for (const auto sig : signals)
     {
         std::signal(sig, signal_handler);

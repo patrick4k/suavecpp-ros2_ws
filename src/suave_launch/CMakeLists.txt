@@ -54,6 +54,10 @@ add_executable(suave_main src/suave_main.cpp
         src/mavutil/TelemetryProperty.h
         src/vio/CloudExporter.cpp
         src/vio/CloudExporter.h
+        src/controllers/GazeboSwarmTest.cpp
+        src/controllers/GazeboSwarmTest.h
+        src/mavutil/Mavlink.cpp
+        src/mavutil/Mavlink.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)

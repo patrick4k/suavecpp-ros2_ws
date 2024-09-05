@@ -4,8 +4,9 @@
 
 #include "Drone.h"
 
-Drone::Drone(std::shared_ptr<System> system): m_system(std::move(system))
+Drone::Drone(std::shared_ptr<System> system, DroneId instance): m_system(std::move(system)), m_instance(instance)
 {
+    // TODO: Fix this
     while (std::isnan(m_initial_heading_rad)) {
         m_initial_heading_rad = m_telemetry.heading().heading_deg * M_PI / 180.0;
         suave_log << "Waiting for initial heading...\n";

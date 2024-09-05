@@ -11,10 +11,10 @@
 
 #include "ITask.h"
 
-class SystemTask : public ITask
+class SystemTask final : public ITask
 {
 public:
-    explicit SystemTask(std::vector<std::string> commands, bool should_print_output = false) :
+    explicit SystemTask(std::vector<std::string> commands, const bool should_print_output = false) :
         m_commands(std::move(commands)),
         m_should_print_output(should_print_output)
     {

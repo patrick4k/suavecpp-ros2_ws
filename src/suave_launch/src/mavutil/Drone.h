@@ -18,9 +18,15 @@
 
 using namespace mavsdk;
 
+using DroneId = uint32_t;
+
 class Drone {
 public:
-    explicit Drone(std::shared_ptr<System> system);
+    explicit Drone(std::shared_ptr<System> system): Drone(std::move(system), 0){}
+    explicit Drone(std::shared_ptr<System> system, DroneId instance);
+    Drone(Drone const& drone): Drone(drone.m_system, m_instance)
+    {
+    }
 
     std::shared_ptr<System> system() { return m_system; }
     Action& action() { return m_action; }
@@ -56,6 +62,8 @@ public:
     Tune::Result play_ready_tune();
 
 private:
+    DroneId m_instance{};
+
     // Mavsdk
     std::shared_ptr<System> m_system{};
     Action m_action{*m_system};

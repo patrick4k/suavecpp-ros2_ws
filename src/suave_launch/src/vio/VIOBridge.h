@@ -25,7 +25,7 @@ public:
 
 private:
     std::shared_ptr<System> m_system;
-    double m_heading_rad{double(NAN)};
+    double m_heading_rad{NAN};
 
     using Subscription = rclcpp::Subscription<OdomMsg>;
     std::optional<Subscription::SharedPtr> m_subscription{};

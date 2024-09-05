@@ -7,13 +7,13 @@
 
 #include "../common/ISuaveController.h"
 #include "../mavutil/Drone.h"
-#include "../mavutil/MavUtil.h"
+#include "../mavutil/Mavlink.h"
 
 class SuaveVIOTestFlight: public ISuaveController {
 public:
     SuaveVIOTestFlight() :
         ISuaveController(),
-        m_drone(connectToPX4SITL(m_mavsdk))
+        m_drone(Mavlink::connectToSerial())
     {
     }
 
