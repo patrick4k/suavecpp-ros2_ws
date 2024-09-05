@@ -13,7 +13,10 @@
 std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk)
 {
     // Connect to the PX4 SITL.
-    mavsdk::ConnectionResult connection_result = m_mavsdk.add_any_connection("udp://:14540");
+    const std::string connection_string = "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A10L1BX5-if00-port0";
+    const auto connection_url = "serial://" + connection_string + ":57600";
+    suave_log << "Attempting to connect to " << connection_url << std::endl;
+    mavsdk::ConnectionResult connection_result = m_mavsdk.add_any_connection(connection_url);
     if (connection_result != mavsdk::ConnectionResult::Success)
     {
         throw std::runtime_error((std::stringstream() << "Connection failed: " << connection_result << '\n').str());
