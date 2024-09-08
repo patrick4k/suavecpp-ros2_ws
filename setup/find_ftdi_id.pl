@@ -2,7 +2,9 @@
 use strict;
 use warnings;
 
-if (defined($ENV{SUAVE_MAVLINK_SERIAL_ID}))
+my $id = `echo \$SUAVE_MAVLINK_SERIAL_ID`;
+
+if (length $id > 2)
 {
     die 'SUAVE_MAVLINK_SERIAL_ID is already set';
 }
@@ -21,7 +23,7 @@ for (@files)
     {
         print "found '$1'! \n";
         `echo 'export SUAVE_MAVLINK_SERIAL_ID="$1"' >> ~/.bashrc`;
-        die;
+        die '$SUAVE_MAVLINK_SERIAL_ID is set in .bashrc';
     }
 }
 
