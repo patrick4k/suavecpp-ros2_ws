@@ -10,10 +10,21 @@
 
 #include "../util/Util.h"
 
+std::string get_env_var( std::string const & key ) {
+    char * val;
+    val = getenv( key.c_str() );
+    std::string retval = "";
+    if (val != NULL) {
+        retval = val;
+    }
+    return retval;
+}
+
 std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk)
 {
+    const auto& id = get_env_var("SUAVE_MAVLINK_SERIAL_ID");
     // Connect to the PX4 SITL.
-    const std::string connection_string = "/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A10L1BX5-if00-port0";
+    const std::string connection_string = "/dev/serial/by-id/" + id;
     const auto connection_url = "serial://" + connection_string + ":57600";
     suave_log << "Attempting to connect to " << connection_url << std::endl;
     mavsdk::ConnectionResult connection_result = m_mavsdk.add_any_connection(connection_url);
