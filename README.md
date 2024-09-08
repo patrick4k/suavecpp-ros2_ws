@@ -7,7 +7,9 @@ Dependencies:
 - PCL
 
 ```
-cd suavecpp-ros2_ws
+cd suavecpp-ros2_ws/setup
+source setup.bash
+cd ..
 colcon build
 source ./install setup.bash
 ```
