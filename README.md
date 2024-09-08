@@ -8,7 +8,7 @@ Dependencies:
 
 ```
 cd suavecpp-ros2_ws/setup
-source install_deps.bash
+source setup.bash
 cd ..
 colcon build
 source ./install setup.bash
