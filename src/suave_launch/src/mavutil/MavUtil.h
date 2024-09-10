@@ -7,6 +7,6 @@
 #include <mavsdk.h>
 #include <memory>
 
-std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk);
+std::shared_ptr<mavsdk::System> connectToPX4(mavsdk::Mavsdk& m_mavsdk);
 
 #endif //MAVUTIL_H

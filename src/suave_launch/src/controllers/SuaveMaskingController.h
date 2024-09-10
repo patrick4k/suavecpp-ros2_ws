@@ -15,8 +15,9 @@ public:
         ISuaveController()
     {
         try {
-            // TODO: Correct for test case
-            //m_drone = std::make_unique<Drone>(connectToPX4SITL(m_mavsdk));
+            if (const auto& system = connectToPX4(m_mavsdk)) {
+                m_drone = std::make_unique<Drone>(system);
+            }
         }
         catch (...) { /*ignore*/ }
     }

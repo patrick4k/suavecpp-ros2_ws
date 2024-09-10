@@ -20,9 +20,15 @@ std::string get_env_var( std::string const & key ) {
     return retval;
 }
 
-std::shared_ptr<mavsdk::System> connectToPX4SITL(mavsdk::Mavsdk& m_mavsdk)
+std::shared_ptr<mavsdk::System> connectToPX4(mavsdk::Mavsdk& m_mavsdk)
 {
     const auto& id = get_env_var("SUAVE_MAVLINK_SERIAL_ID");
+
+    if (id  == "SITL" || id.size() <= 2) {
+        // TODO: Connect to sitl
+        return nullptr;
+    }
+
     // Connect to the PX4 SITL.
     const std::string connection_string = "/dev/serial/by-id/" + id;
     const auto connection_url = "serial://" + connection_string + ":57600";

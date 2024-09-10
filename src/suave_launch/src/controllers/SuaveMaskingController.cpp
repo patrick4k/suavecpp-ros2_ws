@@ -11,9 +11,8 @@
 
 void SuaveMaskingController::start() {
     RosNodeSpinner spinner{};
-    auto masking_subscriber = std::make_shared<MaskingSubscriber>();
+    auto masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get());
     spinner.add_node(masking_subscriber);
-
 
     suave_log << "Starting spinner" << std::endl;
 

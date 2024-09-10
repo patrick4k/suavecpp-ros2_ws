@@ -13,7 +13,7 @@ class SuaveVIOTestFlight: public ISuaveController {
 public:
     SuaveVIOTestFlight() :
         ISuaveController(),
-        m_drone(connectToPX4SITL(m_mavsdk))
+        m_drone(connectToPX4(m_mavsdk))
     {
     }
 
