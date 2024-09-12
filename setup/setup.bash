@@ -1,6 +1,6 @@
 # init setup
-sudo apt install openssh-server -y# ssh
-sudo apt install solaar -y# drivers for the keyboard+touchpad
+sudo apt install openssh-server -y # ssh
+sudo apt install solaar -y # drivers for the keyboard+touchpad
 
 # install ros2 (https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
 locale  # check for UTF-8
