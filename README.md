@@ -2,7 +2,7 @@
 
 ## Initialize your workspace and environment
 ```
-sudo apt install git
+sudo apt install git -y
 mkdir ~/Dev
 cd ~/Dev
 git clone https://github.com/patrick4k/suavecpp-ros2_ws.git
