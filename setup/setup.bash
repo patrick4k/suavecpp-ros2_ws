@@ -38,7 +38,6 @@ sudo apt install ros-$ROS_DISTRO-rtabmap-ros
 
 # other tools
 sudo apt install libpcl-dev
-sudo apt install git
 sudo dpkg -i libmavsdk-dev_1.4.16_ubuntu20.04_amd64.deb
 
 # add persistant environment variable for mavlink serial connection
