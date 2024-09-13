@@ -51,7 +51,7 @@ public:
 
     Offboard::Result offboard_land();
 
-    Offboard::Result set_position_frd(const float& f, const float& r, const float& d, const float& yaw_deg);
+    Offboard::Result offboard_hold();
 
     // Tunes
     Tune::Result play_waiting_tune();
