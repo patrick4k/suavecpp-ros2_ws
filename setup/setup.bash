@@ -34,7 +34,7 @@ sudo apt-get install librealsense2-dev -y
 sudo apt-get install librealsense2-dbg -y
 
 # rtabmaps_ros
-sudo apt install ros-$ROS_DISTRO-rtabmap-ros -y
+sudo apt install ros-humble-rtabmap-ros -y
 
 # other tools
 sudo apt install libpcl-dev -y
