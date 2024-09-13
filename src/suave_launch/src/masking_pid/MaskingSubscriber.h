@@ -7,6 +7,7 @@
 
 #include <geometry_msgs/msg/vector3.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <atomic>
 
 #include "../mavutil/Drone.h"
 
@@ -27,6 +28,10 @@ private:
     Subscription::SharedPtr m_subscription{ nullptr };
 
     Drone* m_drone{ nullptr };
+    std::atomic_bool m_shouldEnable{ false };
+    std::optional<double> m_prevX{};
+    std::optional<double> m_prevY{};
+    std::optional<double> m_prevZ{};
 };
 
 #endif //MASKINGSUBSCRIBER_H
