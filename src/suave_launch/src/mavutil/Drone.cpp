@@ -43,7 +43,7 @@ Offboard::Result Drone::offboard_land()
     return offboard().set_velocity_ned({0, 0, 0.5, yaw});
 }
 
-Offboard::Result Drone::offboard_land()
+Offboard::Result Drone::offboard_hold()
 {
     return set_relative_position_ned(0, 0, 0);
 }
