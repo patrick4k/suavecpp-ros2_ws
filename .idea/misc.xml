@@ -6,6 +6,9 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.10 (suavecpp-ros2_ws)" />
   </component>
+  <component name="CMakePythonSetting">
+    <option name="pythonIntegrationState" value="NO" />
+  </component>
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/src/suave_launch">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>

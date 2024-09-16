@@ -91,9 +91,13 @@ void SuaveMaskingController::start() {
 
     // Start offboard and arm
     try_action(m_drone->action().arm())
+    sleep(5)
     try_offboard(m_drone->offboard_setpoint())
+    sleep(1)
     try_offboard(m_drone->offboard().start())
-    //try_offboard(m_drone->set_relative_position_ned(0, 0, -3))
+    sleep(3)
+    try_offboard(m_drone->set_relative_position_ned(0, 0, -3))
+    sleep(5)
 
     suave_log << "Ready to enable masking control" << std::endl;
 
@@ -135,7 +139,7 @@ void SuaveMaskingController::start() {
 }
 
 void SuaveMaskingController::shutdown() {
-
+    suave_log << "SuaveMaskingController::shutdown()" << std::endl;
     try_action(m_drone->action().disarm())
     
     for (auto& task: m_task) {
