@@ -12,8 +12,8 @@ def apply_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # Define range of neon yellow color in HSV
-    lower_yellow = np.array([20, 100, 100])  # Lower bound for neon yellow
-    upper_yellow = np.array([30, 255, 255])  # Upper bound for neon yellow
+    lower_yellow = np.array([140, 50, 50])  # Lower bound for neon yellow
+    upper_yellow = np.array([170, 255, 255])  # Upper bound for neon yellow
 
     # Create masks. Threshold the HSV image to get only neon yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
