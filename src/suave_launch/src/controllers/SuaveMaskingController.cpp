@@ -9,31 +9,7 @@
 #include "../vio/CloudExporter.h"
 #include "../vio/VIOBridge.h"
 #include "../masking_pid/MaskingSubscriber.h"
-
-#define sleep(sec) std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(sec * 1e6)));
-
-#define try_mav(act, success) \
-{\
-    suave_log << "Starting " << #act << std::endl; \
-    if (m_end_controller)     \
-    {\
-        suave_err << "m_end_controller = true" << std::endl; \
-        this->shutdown();\
-        return;\
-    }\
-    const auto act_result = act; \
-    if (act_result != success) \
-    { \
-        suave_err << #act << " failed: " << act_result << std::endl; \
-        this->shutdown(); \
-        return; \
-    } \
-    suave_log << #act << ": " << act_result << std::endl;\
-}
-
-#define try_action(act) try_mav(act, Action::Result::Success)
-#define try_offboard(act) try_mav(act, Offboard::Result::Success)
-#define try_tune(act) try_mav(act, Tune::Result::Success)
+#include "ControllerMacros.h"
 
 void SuaveMaskingController::start() {
     // Create realsense and rtabmap nodes
@@ -96,12 +72,12 @@ void SuaveMaskingController::start() {
     sleep(1)
     try_offboard(m_drone->offboard().start())
     sleep(3)
-    try_offboard(m_drone->set_relative_position_ned(0, 0, -3))
-    sleep(5)
 
     suave_log << "Ready to enable masking control" << std::endl;
 
     await_confirmation;
+
+    masking_spinner->start_in_thread();
 
     while (true) {
         suave_log << "Input action: ";
@@ -109,24 +85,28 @@ void SuaveMaskingController::start() {
         std::getline(std::cin, buffer);
         if (buffer == "land")
         {
-            try_offboard(m_drone->offboard_land())
-        }
-        if (buffer == "hold")
-        {
-            m_drone->offboard_hold();
+            m_drone->offboard_wait_for_land();
         }
         if (buffer == "stop")
         {
-            masking_spinner->stop();
+            masking_subscriber->set_enable(false);
             m_drone->offboard_hold();
         }
         if (buffer == "start")
         {
-            masking_spinner->start_in_thread();
+            masking_subscriber->set_enable(true);
+        }
+        if (buffer == "takeoff")
+        {
+            try_offboard(m_drone->set_relative_position_ned(0, 0, -3))
+        }
+        if (buffer == "exit")
+        {
+            break;
         }
     }
 
-    try_action(m_drone->action().disarm())
+    m_drone->offboard_wait_for_land();
 
     suave_log << "Stopping task" << std::endl;
 
@@ -140,7 +120,7 @@ void SuaveMaskingController::start() {
 
 void SuaveMaskingController::shutdown() {
     suave_log << "SuaveMaskingController::shutdown()" << std::endl;
-    try_action(m_drone->action().disarm())
+    m_drone->offboard_wait_for_land();
     
     for (auto& task: m_task) {
         task->stop();

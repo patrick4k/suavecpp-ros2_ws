@@ -59,6 +59,7 @@ add_executable(suave_main src/suave_main.cpp
         src/controllers/SuaveMaskingController.h
         src/masking_pid/MaskingSubscriber.cpp
         src/masking_pid/MaskingSubscriber.h
+        src/controllers/ControllerMacros.h
 )
 ament_target_dependencies(suave_main MAVSDK)
 ament_target_dependencies(suave_main rclcpp)

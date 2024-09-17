@@ -50,6 +50,7 @@ public:
     Offboard::Result set_relative_position_ned(const float& n, const float& e, const float& d);
 
     Offboard::Result offboard_land();
+    Offboard::Result offboard_wait_for_land();
 
     Offboard::Result offboard_hold();
 

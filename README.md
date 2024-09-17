@@ -18,7 +18,7 @@ Dependencies:
 
 ```
 colcon build
-source ./install setup.bash
+source ./install/setup.bash
 ```
 
 ## To run

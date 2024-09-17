@@ -5,6 +5,8 @@
 #include "Drone.h"
 #include <cmath>
 
+#include "../controllers/ControllerMacros.h"
+
 Drone::Drone(std::shared_ptr<System> system): m_system(std::move(system))
 {
     Timer timer{};
@@ -41,6 +43,32 @@ Offboard::Result Drone::offboard_land()
 {
     const auto yaw = m_attitude_euler.wait_for_next().unwrap().yaw_deg;
     return offboard().set_velocity_ned({0, 0, 0.5, yaw});
+}
+
+Offboard::Result Drone::offboard_wait_for_land()
+{
+    auto land_result = offboard_land();
+    if (land_result != Offboard::Result::Success)
+    {
+        return land_result;
+    }
+
+    // Wait for drone to land
+    int elapse_sec = 0;
+    while (in_air())
+    {
+        suave_log << "Waiting for drone to land, elapse_sec: " << elapse_sec << std::endl;
+        sleep(1)
+        elapse_sec++;
+    }
+    sleep(3)
+    auto disarm_result = action().disarm();
+    if (disarm_result != Action::Result::Success)
+    {
+        suave_err << "Disarm failed: " << disarm_result << std::endl;
+    }
+
+    return land_result;
 }
 
 Offboard::Result Drone::offboard_hold()

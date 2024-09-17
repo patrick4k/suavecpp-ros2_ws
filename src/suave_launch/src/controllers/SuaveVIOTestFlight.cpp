@@ -9,30 +9,7 @@
 #include "../vio/CloudExporter.h"
 #include "../vio/VIOBridge.h"
 
-#define sleep(sec) std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(sec * 1e6)));
-
-#define try_mav(act, success) \
-{\
-    suave_log << "Starting " << #act << std::endl; \
-    if (m_end_controller)     \
-    {\
-        suave_err << "m_end_controller = true" << std::endl; \
-        this->shutdown();\
-        return;\
-    }\
-    const auto act_result = act; \
-    if (act_result != success) \
-    { \
-        suave_err << #act << " failed: " << act_result << std::endl; \
-        this->shutdown(); \
-        return; \
-    } \
-    suave_log << #act << ": " << act_result << std::endl;\
-}
-
-#define try_action(act) try_mav(act, Action::Result::Success)
-#define try_offboard(act) try_mav(act, Offboard::Result::Success)
-#define try_tune(act) try_mav(act, Tune::Result::Success)
+#include "ControllerMacros.h"
 
 std::vector<ITask*> s_tasks{};
 
@@ -98,11 +75,7 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.offboard_setpoint())
     try_offboard(m_drone.offboard().start())
 
-    try_offboard(m_drone.set_relative_position_ned(0,0,-1))
-    sleep(10)
-    try_offboard(m_drone.set_relative_position_ned(-3, -3, -2))
-    sleep(10)
-    try_offboard(m_drone.set_relative_position_ned(3, 3, 1))
+    try_offboard(m_drone.set_relative_position_ned(0,0,-2))
     sleep(10)
     try_offboard(m_drone.offboard_land())
 
