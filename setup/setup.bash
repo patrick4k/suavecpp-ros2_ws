@@ -40,6 +40,10 @@ sudo apt install ros-humble-rtabmap-ros -y
 sudo apt install libpcl-dev -y
 sudo dpkg -i libmavsdk-dev_1.4.16_ubuntu20.04_amd64.deb
 
+# python deps
+pip install simple_pid
+
+
 # add persistant environment variable for mavlink serial connection
 perl find_ftdi_id.pl
 
