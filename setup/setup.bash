@@ -33,7 +33,7 @@ sudo apt-get install librealsense2-dkms -y
 sudo apt-get install librealsense2-utils -y
 sudo apt-get install librealsense2-dev -y
 sudo apt-get install librealsense2-dbg -y
-sudo apt install ros-humble-librealsense2*
+sudo apt install ros-humble-realsense2-* -y
 
 # rtabmaps_ros
 sudo apt install ros-humble-rtabmap-ros -y
