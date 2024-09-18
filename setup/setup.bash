@@ -1,6 +1,7 @@
 # init setup
 sudo apt install openssh-server -y # ssh
 sudo apt install solaar -y # drivers for the keyboard+touchpad
+sudo apt install python3-pip -y
 
 # install ros2 (https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
 locale  # check for UTF-8
@@ -32,6 +33,7 @@ sudo apt-get install librealsense2-dkms -y
 sudo apt-get install librealsense2-utils -y
 sudo apt-get install librealsense2-dev -y
 sudo apt-get install librealsense2-dbg -y
+sudo apt install ros-humble-librealsense2*
 
 # rtabmaps_ros
 sudo apt install ros-humble-rtabmap-ros -y
