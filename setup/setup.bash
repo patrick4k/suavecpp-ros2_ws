@@ -39,6 +39,7 @@ sudo apt install ros-humble-rtabmap-ros -y
 # other tools
 sudo apt install libpcl-dev -y
 sudo dpkg -i libmavsdk-dev_1.4.16_ubuntu20.04_amd64.deb
+sudo apt install net-tools -y
 
 # python deps
 pip install simple_pid
