@@ -4,7 +4,7 @@
 #include "controllers/SuaveMaskingController.h"
 #include "controllers/SuaveVIOTestFlight.h"
 
-SuaveMaskingController s_controller{};
+SuaveVIOTestFlight s_controller{};
 
 void signal_handler(int sig)
 {
