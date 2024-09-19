@@ -26,7 +26,7 @@ void SuaveVIOTestFlight::start()
         {
             "source /opt/ros/humble/setup.bash",
             "ros2 param set /camera/camera depth_module.emitter_enabled 0",
-            "ros2 launch rtabmap_examples realsense_d435i_infra.launch.py"
+            "ros2 launch ~/Dev/suavecpp-ros2_ws/launch/suave_slam.py"
         }
     };
 
@@ -75,8 +75,10 @@ void SuaveVIOTestFlight::start()
     try_offboard(m_drone.offboard_setpoint())
     try_offboard(m_drone.offboard().start())
 
+    sleep(5)
+
     try_offboard(m_drone.set_relative_position_ned(0,0,-2))
-    sleep(10)
+    sleep(5)
     try_offboard(m_drone.offboard_land())
 
     // Wait for drone to land

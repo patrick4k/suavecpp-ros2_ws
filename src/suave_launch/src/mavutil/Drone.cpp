@@ -29,7 +29,7 @@ Drone::Drone(std::shared_ptr<System> system): m_system(std::move(system))
 
 Offboard::Result Drone::offboard_setpoint()
 {
-    return offboard().set_attitude({0, 0, 0, 0});
+    return offboard().set_velocity_body({0, 0, 0, 0});
 }
 
 Offboard::Result Drone::set_relative_position_ned(const float& n, const float& e, const float& d)
