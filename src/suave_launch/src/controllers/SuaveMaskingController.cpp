@@ -65,17 +65,32 @@ void SuaveMaskingController::start() {
     suave_log << "Starting VIO" << std::endl;
     vio_spinner->start_in_thread();
 
+    suave_log << "Ready for flight?" << std::endl;
+    await_confirmation;
+
+    suave_log << "Starting flight plan" << std::endl;
+
     // Start offboard and arm
     try_action(m_drone->action().arm())
-    sleep(5)
     try_offboard(m_drone->offboard_setpoint())
-    sleep(1)
     try_offboard(m_drone->offboard().start())
-    sleep(3)
+
+    sleep(5)
+
 
     suave_log << "Ready to enable masking control" << std::endl;
 
+    auto masking_pid_task = std::make_shared<SystemTask>(
+        std::vector<std::string>{
+            "source /opt/ros/humble/setup.bash",
+            "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
+            "ros2 run suave_controls masking_pid_publisher"
+        }
+    );
+
     await_confirmation;
+
+    masking_pid_task->start_in_thread();
 
     masking_spinner->start_in_thread();
 
@@ -87,23 +102,30 @@ void SuaveMaskingController::start() {
         {
             m_drone->offboard_wait_for_land();
         }
-        if (buffer == "stop")
+        if (buffer == "disable")
         {
             masking_subscriber->set_enable(false);
             m_drone->offboard_hold();
         }
-        if (buffer == "start")
+        if (buffer == "enable")
         {
             masking_subscriber->set_enable(true);
         }
         if (buffer == "takeoff")
         {
-            try_offboard(m_drone->set_relative_position_ned(0, 0, -3))
+            try_offboard(m_drone->set_relative_position_ned(0, 0, -2))
         }
         if (buffer == "exit")
         {
             break;
         }
+        if (buffer == "reset")
+        {
+            masking_pid_task->stop();
+            sleep(5)
+            masking_pid_task->start_in_thread();
+        }
+        suave_log << std::endl;
     }
 
     m_drone->offboard_wait_for_land();
