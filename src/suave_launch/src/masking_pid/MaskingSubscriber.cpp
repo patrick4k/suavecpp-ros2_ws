@@ -16,26 +16,26 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
     if (m_enable)
     {
-        constexpr float MAX_VELOCITY = 0.10;
-        constexpr float MAX_DELTA_VELOCITY = 1.0*MAX_VELOCITY;
-        const auto x = static_cast<float>(msg->x);
-        const auto y = static_cast<float>(msg->y);
-        const auto z = static_cast<float>(msg->z);
+        constexpr float MAX_VELOCITY = 0.25;
+        constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
+        const auto x = static_cast<float>(msg->x / 100);
+        const auto y = static_cast<float>(msg->y / 100);
+        const auto z = static_cast<float>(msg->z / 100);
 
         Velocity velocity
         {
-            0 * MAX_VELOCITY * x, // forward m/s
+            MAX_VELOCITY * x, // forward m/s
             0 * MAX_VELOCITY * z, // right m/s
             MAX_VELOCITY * -y, // down m/s
             0 // yawspeed deg/s
         };
 
-        // if (m_prevVelocity && std::abs(velocity.forward_m_s - m_prevVelocity->forward_m_s) > MAX_DELTA_VELOCITY)
-        // {
-        //     suave_err << "Large difference in forward velocity: " << velocity.forward_m_s << " vs " << m_prevVelocity->forward_m_s << std::endl;
-        //     this->shutdown();
-        //     return;
-        // }
+        if (m_prevVelocity && std::abs(velocity.forward_m_s - m_prevVelocity->forward_m_s) > MAX_DELTA_VELOCITY)
+        {
+            suave_err << "Large difference in forward velocity: " << velocity.forward_m_s << " vs " << m_prevVelocity->forward_m_s << std::endl;
+            this->shutdown();
+            return;
+        }
         // if (m_prevVelocity && std::abs(velocity.right_m_s - m_prevVelocity->right_m_s) > MAX_DELTA_VELOCITY)
         // {
         //     suave_err << "Large difference in right velocity: " << velocity.right_m_s << " vs " << m_prevVelocity->right_m_s << std::endl;

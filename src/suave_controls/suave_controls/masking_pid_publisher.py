@@ -50,6 +50,10 @@ def find_and_draw_contours(frame, mask):
 
     return frame, center_x_box, center_y_box, depth
 
+#         P, I, D
+XGAINS = [1, 0, 0]
+YGAINS = [1, 0, 0]
+ZGAINS = [1, 0, 0]
 
 class MaskingPIDPublisher(Node):
 
@@ -64,9 +68,9 @@ class MaskingPIDPublisher(Node):
         self.center_y = self.frame_height / 2
         self.setpoint_depth = 254  # Example setpoint for depth in millimeters
 
-        self.pid_x = PID(0.1, 0.01, 0.005, setpoint=self.center_x)  # PID for horizontal position
-        self.pid_y = PID(0.1, 0.01, 0.005, setpoint=self.center_y)  # PID for vertical position
-        self.pid_depth = PID(1.0, 0.1, 0.05, setpoint=self.setpoint_depth)  # PID for depth position
+        self.pid_x = PID(XGAINS[0], XGAINS[1], XGAINS[2], setpoint=self.center_x)  # PID for horizontal position
+        self.pid_y = PID(YGAINS[0], YGAINS[1], YGAINS[2], setpoint=self.center_y)  # PID for vertical position
+        self.pid_depth = PID(ZGAINS[0], ZGAINS[1], ZGAINS[2], setpoint=self.setpoint_depth)  # PID for depth position
 
         self.pid_x.output_limits = (-100, 100)  # Adjust as needed for your application
         self.pid_y.output_limits = (-100, 100)  # Adjust as needed for your application

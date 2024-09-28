@@ -8,7 +8,6 @@
 #include "../ros/RosNodeSpinner.h"
 #include "../vio/CloudExporter.h"
 #include "../vio/VIOBridge.h"
-#include "../masking_pid/MaskingSubscriber.h"
 #include "ControllerMacros.h"
 
 void SuaveMaskingController::start() {
@@ -44,8 +43,8 @@ void SuaveMaskingController::start() {
     auto masking_spinner = std::make_shared<RosNodeSpinner>();
     m_task.push_back(masking_spinner);
 
-    auto masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get());
-    masking_spinner->add_node(masking_subscriber);
+    m_masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get());
+    masking_spinner->add_node(m_masking_subscriber);
 
     suave_log << "Starting SLAM" << std::endl;
 
@@ -68,12 +67,6 @@ void SuaveMaskingController::start() {
     suave_log << "Ready for flight?" << std::endl;
     await_confirmation;
 
-    suave_log << "Starting flight plan" << std::endl;
-
-    suave_log << "Ready to enable masking control" << std::endl;
-
-    await_confirmation;
-
     auto masking_pid_task = std::make_shared<SystemTask>(
         std::vector<std::string>{
             "source /opt/ros/humble/setup.bash",
@@ -81,8 +74,6 @@ void SuaveMaskingController::start() {
             "ros2 run suave_controls masking_pid_publisher"
         }
     );
-
-    await_confirmation;
 
     // Start offboard and arm
     try_action(m_drone->action().arm())
@@ -99,7 +90,7 @@ void SuaveMaskingController::start() {
 
         if (buffer == "takeoff")
         {
-            try_offboard(m_drone->set_relative_position_ned(0, 0, -2))
+            try_offboard(m_drone->set_relative_position_ned(0, 0, -1.75))
         }
         if (buffer == "start")
         {
@@ -141,6 +132,11 @@ void SuaveMaskingController::start() {
 
 void SuaveMaskingController::shutdown() {
     suave_log << "SuaveMaskingController::shutdown()" << std::endl;
+    if (m_masking_subscriber)
+    {
+        m_masking_subscriber->set_enable(false);
+    }
+
     m_drone->offboard_wait_for_land();
     
     for (auto& task: m_task) {
