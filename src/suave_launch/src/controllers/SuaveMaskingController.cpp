@@ -70,15 +70,9 @@ void SuaveMaskingController::start() {
 
     suave_log << "Starting flight plan" << std::endl;
 
-    // Start offboard and arm
-    try_action(m_drone->action().arm())
-    try_offboard(m_drone->offboard_setpoint())
-    try_offboard(m_drone->offboard().start())
-
-    sleep(5)
-
-
     suave_log << "Ready to enable masking control" << std::endl;
+
+    await_confirmation;
 
     auto masking_pid_task = std::make_shared<SystemTask>(
         std::vector<std::string>{
@@ -88,9 +82,16 @@ void SuaveMaskingController::start() {
         }
     );
 
+    masking_pid_task->start_in_thread();
+
     await_confirmation;
 
-    masking_pid_task->start_in_thread();
+    // Start offboard and arm
+    try_action(m_drone->action().arm())
+    try_offboard(m_drone->offboard_setpoint())
+    try_offboard(m_drone->offboard().start())
+
+    sleep(5)
 
     masking_spinner->start_in_thread();
 
