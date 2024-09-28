@@ -16,7 +16,7 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
     if (m_enable)
     {
-        constexpr float MAX_VELOCITY = 0.25;
+        constexpr float MAX_VELOCITY = 0.10;
         constexpr float MAX_DELTA_VELOCITY = 1.0*MAX_VELOCITY;
         const auto x = static_cast<float>(msg->x);
         const auto y = static_cast<float>(msg->y);
