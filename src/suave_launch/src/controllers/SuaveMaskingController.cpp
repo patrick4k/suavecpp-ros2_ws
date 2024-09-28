@@ -82,8 +82,6 @@ void SuaveMaskingController::start() {
         }
     );
 
-    masking_pid_task->start_in_thread();
-
     await_confirmation;
 
     // Start offboard and arm
@@ -93,38 +91,29 @@ void SuaveMaskingController::start() {
 
     sleep(5)
 
-    masking_spinner->start_in_thread();
-
     while (true) {
         suave_log << "Input action: ";
         std::string buffer{};
         std::getline(std::cin, buffer);
-        if (buffer == "land")
-        {
-            m_drone->offboard_wait_for_land();
-        }
-        if (buffer == "disable")
-        {
-            masking_subscriber->set_enable(false);
-            m_drone->offboard_hold();
-        }
-        if (buffer == "enable")
-        {
-            masking_subscriber->set_enable(true);
-        }
+
         if (buffer == "takeoff")
         {
             try_offboard(m_drone->set_relative_position_ned(0, 0, -2))
         }
+        if (buffer == "start")
+        {
+            masking_spinner->start_in_thread();
+            masking_pid_task->start_in_thread();
+        }
+        if (buffer == "stop")
+        {
+            masking_pid_task->stop();
+            masking_spinner->stop();
+            try_offboard(m_drone->offboard_hold())
+        }
         if (buffer == "exit")
         {
             break;
-        }
-        if (buffer == "reset")
-        {
-            masking_pid_task->stop();
-            sleep(5)
-            masking_pid_task->start_in_thread();
         }
         suave_log << std::endl;
     }

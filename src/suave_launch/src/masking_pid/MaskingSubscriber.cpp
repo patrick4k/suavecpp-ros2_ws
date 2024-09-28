@@ -49,8 +49,16 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
             return;
         }
 
-        try_offboard(m_drone->offboard().set_velocity_body(velocity));
-        m_prevVelocity = velocity;
+        const auto& result = m_drone->offboard().set_velocity_body(velocity);
+        if (result == Offboard::Result::Success)
+        {
+            m_prevVelocity = velocity;
+        }
+        else
+        {
+            suave_log << "Error setting velocity: " << result << "\nF: " << velocity.forward_m_s << "\nR: " << velocity.right_m_s << "\nD:" << velocity.down_m_s << std::endl;
+            this->shutdown();
+        }
     }
 }
 
