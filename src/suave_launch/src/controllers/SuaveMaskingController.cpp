@@ -91,7 +91,8 @@ void SuaveMaskingController::start() {
 
     sleep(5)
 
-    while (true) {
+    while (true) 
+    {
         suave_log << "Input action: ";
         std::string buffer{};
         std::getline(std::cin, buffer);
@@ -110,6 +111,14 @@ void SuaveMaskingController::start() {
             masking_pid_task->stop();
             masking_spinner->stop();
             try_offboard(m_drone->offboard_hold())
+        }
+        if (buffer == "maskon")
+        {
+            masking_pid_task->start_in_thread();
+        }
+        if (buffer == "maskoff")
+        {
+            masking_pid_task->stop();
         }
         if (buffer == "exit")
         {
