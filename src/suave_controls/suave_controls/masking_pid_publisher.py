@@ -1,8 +1,8 @@
 import rclpy
 from rclpy.node import Node
-
+from std_srvs.srv import Empty
 from geometry_msgs.msg import Vector3
-
+import os
 import cv2
 import numpy as np
 from simple_pid import PID  # type: ignore
@@ -76,6 +76,9 @@ class MaskingPIDPublisher(Node):
         self.pid_y.output_limits = (-100, 100)  # Adjust as needed for your application
         self.pid_depth.output_limits = (-100, 100)  # Adjust as needed for your application
 
+        self._srv_export = self.create_service(Empty, 'export', self.service_export)
+
+
     def livestream_from_camera(self, camera_index=0):
         # Open a connection to the camera
         cap = cv2.VideoCapture(camera_index)
@@ -129,6 +132,10 @@ class MaskingPIDPublisher(Node):
         # When everything done, release the capture
         cap.release()
         cv2.destroyAllWindows()
+
+    def service_export(self, request, response):
+        # TODO: Export data here
+        return response
 
 def main(args=None):
     print("[main] suave_controls/masking_pid_publisher.py")
