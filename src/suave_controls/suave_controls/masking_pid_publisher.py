@@ -163,7 +163,7 @@ class MaskingPIDPublisher(Node):
         # TODO: Lets export this generically, maybe a file like ~/Data/MaskingPidData/MM_dd_HH_mm_ss.csv
 
         csv_filename = time.strftime("%m_%d_%H_%M_%S.csv")
-        csv_file_path = '~/Data/SuaveMaskingPid/%s' % csv_filename
+        csv_file_path = '/home/suave/Data/SuaveMaskingPid/%s' % csv_filename
         file_exists = os.path.isfile(csv_file_path)
         
         with open(csv_file_path, mode='a', newline='') as file:
