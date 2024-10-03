@@ -10,6 +10,7 @@
 #include <atomic>
 
 #include "../mavutil/Drone.h"
+#include "../pid/PID.h"
 
 using Vector3Msg = geometry_msgs::msg::Vector3;
 
@@ -18,6 +19,7 @@ public:
     explicit MaskingSubscriber(Drone* drone) : Node("suave_masking_subscriber"), m_drone{ drone } {
         m_subscription = this->create_subscription<Vector3Msg>(
             "/masking_pid_publisher", 10, std::bind(&MaskingSubscriber::callback, this, std::placeholders::_1));
+        m_drone->set_heading_callback(std::bind(&MaskingSubscriber::heading_callback, this, std::placeholders::_1));
     }
 
     void set_enable(bool enable);
@@ -26,6 +28,8 @@ private:
 
     void callback(const Vector3Msg::SharedPtr msg);
     void shutdown();
+
+    void heading_callback(mavsdk::Telemetry::Heading heading);
 
     using Subscription = rclcpp::Subscription<Vector3Msg>;
     Subscription::SharedPtr m_subscription{ nullptr };
@@ -36,6 +40,9 @@ private:
     std::atomic_bool m_enable{ true };
     std::atomic_bool m_end_controller{ false };
     std::optional<Velocity> m_prevVelocity;
+
+    PID m_headingPid{ 1.0, 0.0, 0.0, 180 / 3.14 * m_drone->initial_heading_rad() }; // TODO: tune me
+    std::atomic<double> m_currHeadingPidValue{};
 };
 
 #endif //MASKINGSUBSCRIBER_H

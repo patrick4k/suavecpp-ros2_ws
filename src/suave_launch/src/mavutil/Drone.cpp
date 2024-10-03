@@ -92,3 +92,8 @@ Tune::Result Drone::play_ready_tune()
     Tune::TuneDescription ready_tune{{c, d, e, b}, 90};
     return tune().play_tune(ready_tune);
 }
+
+void Drone::set_heading_callback(TelemetryProperty<Telemetry::Heading>::TCallback callback)
+{
+    m_heading.set_callback(callback);
+}

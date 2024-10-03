@@ -22,6 +22,15 @@ public:
         (telemetry.*subscribe_fn)(std::bind(&TelemetryProperty::set, this, std::placeholders::_1));
     }
 
+    void set_callback(TCallback callback)
+    {
+        if (m_callback)
+        {
+            suave_err << "Overriding TelemetryProperty::m_callback!";
+        }
+        m_callback = callback;
+    }
+
     [[nodiscard]]
     Result<T> get() const
     {
@@ -36,7 +45,7 @@ public:
     {
         if (m_timer_since_last_update.has_been(elapse_sec))
         {
-            return "TelemetryProperty::get_within(), does not have the value within " + std::to_string(elapse_sec) + " seconds! Returning the last value.";
+            return Result<T>("TelemetryProperty::get_within(), does not have the value within " + std::to_string(elapse_sec) + " seconds! Returning the last value.");
         }
         return get();
     }
@@ -49,12 +58,14 @@ public:
         {
             if (timer.has_been(timeout_sec))
             {
-                return "TelemetryProperty::wait_for_next(), timeout after " + std::to_string(timeout_sec) + " seconds!";
+                return Result<T>("TelemetryProperty::wait_for_next(), timeout after " + std::to_string(timeout_sec) + " seconds!");
             }
             std::this_thread::sleep_for(std::chrono::microseconds(static_cast<int>(1/refresh_rate_hz * 1e6 / 10)));
         }
         return get();
     }
+
+private:
 
     void set(T value)
     {

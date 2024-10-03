@@ -68,3 +68,9 @@ void MaskingSubscriber::shutdown()
     m_enable = false;
     m_drone->offboard_hold();
 }
+
+
+void MaskingSubscriber::heading_callback(mavsdk::Telemetry::Heading heading)
+{
+    m_currHeadingPidValue = m_headingPid(heading.heading_deg);
+}

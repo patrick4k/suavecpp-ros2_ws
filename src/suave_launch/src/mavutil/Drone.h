@@ -58,6 +58,8 @@ public:
     Tune::Result play_waiting_tune();
     Tune::Result play_ready_tune();
 
+    void set_heading_callback(TelemetryProperty<Telemetry::Heading>::TCallback callback);
+
 private:
     // Mavsdk
     std::shared_ptr<System> m_system{};
