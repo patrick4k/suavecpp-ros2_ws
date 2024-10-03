@@ -18,17 +18,23 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
     {
         constexpr float MAX_VELOCITY = 0.25;
         constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
+        constexpr float MAX_YAWSPEED = 10;
+        constexpr float MAX_DELTA_YAWSPEED = 2.0*MAX_YAWSPEED;
+
         const auto x = static_cast<float>(msg->x / 100);
         const auto y = static_cast<float>(msg->y / 100);
         const auto z = static_cast<float>(msg->z / 100);
+        const auto w = static_cast<float>(m_currHeadingPidValue.load() / 100);
 
         Velocity velocity
         {
-            MAX_VELOCITY * x, // forward m/s
+            0 * MAX_VELOCITY * x, // forward m/s
             0 * MAX_VELOCITY * z, // right m/s
-            MAX_VELOCITY * -y, // down m/s
-            0 // yawspeed deg/s
+            0 * MAX_VELOCITY * -y, // down m/s
+            MAX_YAWSPEED * w // yawspeed deg/s
         };
+
+        suave_log << "w = " << w << "\nyawspeed = " << velocity.yawspeed_deg_s << std::endl;
 
         if (m_prevVelocity && std::abs(velocity.forward_m_s - m_prevVelocity->forward_m_s) > MAX_DELTA_VELOCITY)
         {
@@ -45,6 +51,12 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
         if (m_prevVelocity && std::abs(velocity.down_m_s - m_prevVelocity->down_m_s) > MAX_DELTA_VELOCITY)
         {
             suave_err << "Large difference in down velocity: " << velocity.down_m_s << " vs " << m_prevVelocity->down_m_s << std::endl;
+            this->shutdown();
+            return;
+        }
+        if (m_prevVelocity && std::abs(velocity.yawspeed_deg_s - m_prevVelocity->yawspeed_deg_s) > MAX_DELTA_YAWSPEED)
+        {
+            suave_err << "Large difference in yawspped: " << velocity.yawspeed_deg_s << " vs " << m_prevVelocity->yawspeed_deg_s << std::endl;
             this->shutdown();
             return;
         }
@@ -69,8 +81,11 @@ void MaskingSubscriber::shutdown()
     m_drone->offboard_hold();
 }
 
-
 void MaskingSubscriber::heading_callback(mavsdk::Telemetry::Heading heading)
 {
-    m_currHeadingPidValue = m_headingPid(heading.heading_deg);
+    if (m_enable)
+    {
+        suave_log << "Heading = " << heading.heading_deg << std::endl;
+        m_currHeadingPidValue = m_headingPid(heading.heading_deg);
+    }
 }

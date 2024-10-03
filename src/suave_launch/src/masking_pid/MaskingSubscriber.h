@@ -37,7 +37,7 @@ private:
     using Velocity = Offboard::VelocityBodyYawspeed;
 
     Drone* m_drone{ nullptr };
-    std::atomic_bool m_enable{ true };
+    std::atomic_bool m_enable{ false };
     std::atomic_bool m_end_controller{ false };
     std::optional<Velocity> m_prevVelocity;
 

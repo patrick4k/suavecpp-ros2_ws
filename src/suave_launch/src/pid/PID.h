@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <chrono>
+#include <algorithm>
 
 class PID
 {
@@ -14,9 +15,14 @@ public:
     {
     }
 
+    virtual double compute_error(double setpoint, double input)
+    {
+        return setpoint - input;
+    }
+
     double operator()(double input)
     {
-        double error = m_setpoint - input;
+        double error = compute_error(m_setpoint, input);
         
         double P = m_Kp * error;
         double I = 0;
@@ -37,7 +43,8 @@ public:
         m_prevTime = now;
         m_prevError = error;
 
-        return P + I + D;
+        auto output = P + I + D;
+        return std::clamp(output, -100.0, 100.0);
     }
 
 private:

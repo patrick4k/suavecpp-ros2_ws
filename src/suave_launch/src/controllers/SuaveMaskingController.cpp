@@ -94,11 +94,13 @@ void SuaveMaskingController::start() {
         }
         if (buffer == "start")
         {
+            m_masking_subscriber->set_enable(true);
             masking_spinner->start_in_thread();
             masking_pid_task->start_in_thread();
         }
         if (buffer == "stop")
         {
+            m_masking_subscriber->set_enable(false);
             masking_pid_task->stop();
             masking_spinner->stop();
             try_offboard(m_drone->offboard_hold())
