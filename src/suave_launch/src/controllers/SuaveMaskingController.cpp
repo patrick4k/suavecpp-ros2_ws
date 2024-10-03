@@ -115,6 +115,19 @@ void SuaveMaskingController::start() {
         {
             break;
         }
+        if (buffer == "export")
+        {
+            auto export_task = SystemTask
+            {
+                std::vector<std::string>>{
+                    "source /opt/ros/humble/setup.bash",
+                    "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
+                    "ros2 service call /export std_srvs/srv/Empty"
+                }
+            };
+
+            export_task.start();
+        }
         suave_log << std::endl;
     }
 

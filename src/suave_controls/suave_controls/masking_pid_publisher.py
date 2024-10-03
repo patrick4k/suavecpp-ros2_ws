@@ -6,6 +6,8 @@ import os
 import cv2
 import numpy as np
 from simple_pid import PID  # type: ignore
+import csv
+import time
 
 def apply_mask(frame):
     # Convert BGR to HSV
@@ -60,7 +62,8 @@ class MaskingPIDPublisher(Node):
     def __init__(self):
         super().__init__('masking_pid_publisher')
         self.publisher_ = self.create_publisher(Vector3, 'masking_pid_publisher', 10)
-        # PID setup for x, y, and depth positions
+        
+        self.bounding_box_data = []
 
         self.frame_width = 640  # Adjust to your camera frame width
         self.frame_height = 480  # Adjust to your camera frame height
@@ -102,6 +105,13 @@ class MaskingPIDPublisher(Node):
             frame_with_contours, center_x_box, center_y_box, depth = find_and_draw_contours(masked_frame, mask)
 
             if center_x_box is not None and center_y_box is not None:
+
+
+                contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            if contours:
+                largest_contour = max(contours, key=cv2.contourArea)
+                x, y, w, h = cv2.boundingRect(largest_contour)  # Get bounding box dimensions
+
                 # Compute the control outputs using PID
                 control_x = self.pid_x(center_x_box)
                 control_y = self.pid_y(center_y_box)
@@ -121,6 +131,20 @@ class MaskingPIDPublisher(Node):
                 self.get_logger().info('Publishing masking pid publisher!')
                 rclpy.spin_once(self, timeout_sec=0)
 
+                bounding_box_info = {
+                    'width': w,  
+                    'height': h,  
+                    'center_x': center_x_box,
+                    'center_y': center_y_box,
+                    'pid_x': control_x,
+                    'pid_y': control_y,
+                    'pid_depth': control_depth
+                }
+                self.bounding_box_data.append(bounding_box_info)
+
+                self.get_logger().info(f'Bounding box data collected: {bounding_box_info}')
+
+
             # Display the resulting frame and mask
             cv2.imshow('Live Stream with Bounding Box and Center Point', frame_with_contours)
             cv2.imshow('Mask', mask)
@@ -134,8 +158,37 @@ class MaskingPIDPublisher(Node):
         cv2.destroyAllWindows()
 
     def service_export(self, request, response):
-        # TODO: Export data here
+        self.get_logger().info('Export service called.')
+
+        # TODO: Lets export this generically, maybe a file like ~/Data/MaskingPidData/MM_dd_HH_mm_ss.csv
+
+        csv_filename = time.strftime("%m_%d_%H_%M_%S.csv")
+        csv_file_path = '~/Data/SuaveMaskingPid/%s' % csv_filename
+        file_exists = os.path.isfile(csv_file_path)
+        
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            if not file_exists:
+                writer.writerow(['Width', 'Height', 'Center X', 'Center Y', 'PID X', 'PID Y', 'PID Depth'])
+            for data in self.bounding_box_data:
+                writer.writerow([
+                    data['width'],
+                    data['height'],
+                    data['center_x'],
+                    data['center_y'],
+                    data['pid_x'],
+                    data['pid_y'],
+                    data['pid_depth']
+                ])  
+        self.get_logger().info('Exported bounding box data to CSV file!')
+        self.bounding_box_data.clear()
         return response
+    
+def test_export(maskingPIDPublisher):
+    maskingPIDPublisher.bounding_box_data.append({
+        'width': 100,
+    })
+    maskingPIDPublisher.service_export(None, None)
 
 def main(args=None):
     print("[main] suave_controls/masking_pid_publisher.py")
@@ -144,7 +197,6 @@ def main(args=None):
 
     maskingPIDPublisher = MaskingPIDPublisher()
 
-    #rclpy.spin(maskingPIDPublisher)
     maskingPIDPublisher.livestream_from_camera()
 
     maskingPIDPublisher.destroy_node()

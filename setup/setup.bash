@@ -1,4 +1,5 @@
 # init setup
+mkdir -p ~/Data/SuaveMaskingPid
 sudo apt install openssh-server -y # ssh
 sudo apt install solaar -y # drivers for the keyboard+touchpad
 sudo apt install python3-pip -y
