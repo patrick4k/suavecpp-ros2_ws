@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PID.h"
+#include <iostream>
 
 class YawPID : public PID
 {
@@ -22,7 +23,8 @@ public:
             error = error + 360;
         }
 
-        return error;
+        //std::cout << "Setpoint = " << setpoint << "\nInput = " << input << "\nError = " << error << std::endl;
 
+        return error;
     }
 };

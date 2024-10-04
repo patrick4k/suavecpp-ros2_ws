@@ -34,7 +34,7 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
             MAX_YAWSPEED * w // yawspeed deg/s
         };
 
-        suave_log << "w = " << w << "\nyawspeed = " << velocity.yawspeed_deg_s << std::endl;
+        //suave_log << "w = " << w << "\nyawspeed = " << velocity.yawspeed_deg_s << std::endl;
 
         if (m_prevVelocity && std::abs(velocity.forward_m_s - m_prevVelocity->forward_m_s) > MAX_DELTA_VELOCITY)
         {
@@ -85,7 +85,7 @@ void MaskingSubscriber::heading_callback(mavsdk::Telemetry::Heading heading)
 {
     if (m_enable)
     {
-        suave_log << "Heading = " << heading.heading_deg << std::endl;
+        //suave_log << "Heading = " << heading.heading_deg << std::endl;
         m_currHeadingPidValue = m_headingPid(heading.heading_deg);
     }
 }

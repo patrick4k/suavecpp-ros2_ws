@@ -10,7 +10,7 @@
 #include <atomic>
 
 #include "../mavutil/Drone.h"
-#include "../pid/PID.h"
+#include "../pid/YawPID.h"
 
 using Vector3Msg = geometry_msgs::msg::Vector3;
 
@@ -41,7 +41,7 @@ private:
     std::atomic_bool m_end_controller{ false };
     std::optional<Velocity> m_prevVelocity;
 
-    PID m_headingPid{ 1.0, 0.0, 0.0, 180 / 3.14 * m_drone->initial_heading_rad() }; // TODO: tune me
+    YawPID m_headingPid{ 1.0, 0.0, 0.0, 180 / 3.14 * m_drone->initial_heading_rad() }; // TODO: tune me
     std::atomic<double> m_currHeadingPidValue{};
 };
 
