@@ -36,7 +36,12 @@ public:
     [[nodiscard]]
     double heading_rad() const
     {
-        return m_heading.get().unwrap().heading_deg * M_PI / 180;
+        return heading_deg() * M_PI / 180;
+    }
+    [[nodiscard]]
+    double heading_deg() const
+    {
+        return m_heading.get().unwrap().heading_deg;
     }
     [[nodiscard]]
     bool in_air() const

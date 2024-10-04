@@ -113,14 +113,25 @@ class MaskingPIDPublisher(Node):
                 x, y, w, h = cv2.boundingRect(largest_contour)  # Get bounding box dimensions
 
                 # Compute the control outputs using PID
-                control_x = self.pid_x(center_x_box)
-                control_y = self.pid_y(center_y_box)
-                control_depth = self.pid_depth(depth)
+                control_x = 0
+                if (center_x_box is not None):
+                    control_x = self.pid_x(center_x_box)
+                
+                control_y = 0
+                if (center_y_box is not None):
+                    control_y = self.pid_y(center_y_box)
+
+                control_depth = 0
+                if (depth is not None):
+                    control_depth = self.pid_depth(depth)
 
                 # Output the center x, center y, depth, and control values to the terminal
-                print(f'Center X: {center_x_box:.2f}\tControl X: {control_x:.2f}')
-                print(f'Center Y: {center_y_box:.2f}\tControl Y: {control_y:.2f}')
-                print(f'Depth: {depth:.2f}\t\tControl Depth: {control_depth:.2f}')
+                try:
+                    print(f'Center X: {center_x_box:.2f}\tControl X: {control_x:.2f}')
+                    print(f'Center Y: {center_y_box:.2f}\tControl Y: {control_y:.2f}')
+                    print(f'Depth: {depth:.2f}\t\tControl Depth: {control_depth:.2f}')
+                except:
+                    print("Something went wrong printing...")
 
                 msg = Vector3()
                 msg.x = float(control_x)

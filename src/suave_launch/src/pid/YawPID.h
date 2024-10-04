@@ -7,7 +7,7 @@ class YawPID : public PID
 {
 public:
 
-    YawPID(double Kp, double Ki, double Kd, double setpoint = 0) : PID(Kp, Ki, Kd, setpoint)
+    YawPID(double Kp, double Ki, double Kd, double setpoint = 0, bool enableLogging = false) : PID(Kp, Ki, Kd, setpoint, enableLogging)
     {
     }
 
@@ -23,7 +23,7 @@ public:
             error = error + 360;
         }
 
-        //std::cout << "Setpoint = " << setpoint << "\nInput = " << input << "\nError = " << error << std::endl;
+        std::cout << "Setpoint = " << setpoint << "\nInput = " << input << "\nError = " << error << std::endl;
 
         return error;
     }

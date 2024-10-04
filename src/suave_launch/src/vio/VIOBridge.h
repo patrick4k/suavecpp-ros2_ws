@@ -23,9 +23,15 @@ public:
         m_subscription = this->create_subscription<OdomMsg>("/odom", 10, std::bind(&VIOBridge::callback, this, std::placeholders::_1));
     }
 
+    double get_recent_yaw_rad()
+    {
+        return m_recent_yaw_rad.load();
+    }
+
 private:
     std::shared_ptr<System> m_system;
     double m_heading_rad{double(NAN)};
+    std::atomic<double> m_recent_yaw_rad{};
 
     using Subscription = rclcpp::Subscription<OdomMsg>;
     std::optional<Subscription::SharedPtr> m_subscription{};
@@ -34,6 +40,7 @@ private:
     {
         Mocap::VisionPositionEstimate vision_position_estimate;
         Mocap::Odometry odometry;
+        double yaw_rad;
     };
 
     static MocapMessages RtabOdom2MocapMessage(const OdomMsg::SharedPtr msg, const double& gam);

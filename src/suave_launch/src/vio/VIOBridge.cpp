@@ -66,7 +66,7 @@ VIOBridge::MocapMessages VIOBridge::RtabOdom2MocapMessage(const OdomMsg::SharedP
     odometry.pose_covariance = covariance;
     odometry.velocity_covariance = covariance;
 
-    return { vision_position_estimate, odometry };
+    return { vision_position_estimate, odometry, yawbody };
 }
 
 bool HandleMocapResult(const std::string& name, const Mocap::Result& result)
@@ -121,10 +121,12 @@ void PrintMocapOdometry(const Mocap::Odometry& odometry) {
 
 void VIOBridge::callback(const OdomMsg::SharedPtr msg)
 {
-    const auto [vision_position_estimate, odometry] = RtabOdom2MocapMessage(msg, m_heading_rad);
+    const auto [vision_position_estimate, odometry, yaw] = RtabOdom2MocapMessage(msg, m_heading_rad);
     const Mocap mocap{m_system};
     const auto vpe_result = mocap.set_vision_position_estimate(vision_position_estimate);
     const auto odom_result = mocap.set_odometry(odometry);
+
+    m_recent_yaw_rad = yaw;
 
 //    PrintMocapOdometry(odometry);
 

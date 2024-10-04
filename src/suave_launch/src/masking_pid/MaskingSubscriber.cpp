@@ -6,9 +6,16 @@
 
 #include "../controllers/ControllerMacros.h"
 
-void MaskingSubscriber::set_enable(bool enable)
+void MaskingSubscriber::enable(double yawsetpoint_deg)
 {
-    m_enable = enable;
+    std::cout << "Enabling masking subscriber with yawsetpoint = " << yawsetpoint_deg << std::endl;
+    m_headingPid = YawPID{ 5.0, 2.25, 2.5, yawsetpoint_deg, true };
+    m_enable = true;
+}
+
+void MaskingSubscriber::disable()
+{
+    m_enable = false;
 }
 
 void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
@@ -16,9 +23,12 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
     if (m_enable)
     {
+        auto heading_deg = 180 / 3.14 * m_vio_bridge->get_recent_yaw_rad();
+        m_currHeadingPidValue = m_headingPid->call(heading_deg);
+
         constexpr float MAX_VELOCITY = 0.25;
         constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
-        constexpr float MAX_YAWSPEED = 10;
+        constexpr float MAX_YAWSPEED = 30;
         constexpr float MAX_DELTA_YAWSPEED = 2.0*MAX_YAWSPEED;
 
         const auto x = static_cast<float>(msg->x / 100);
@@ -86,6 +96,6 @@ void MaskingSubscriber::heading_callback(mavsdk::Telemetry::Heading heading)
     if (m_enable)
     {
         //suave_log << "Heading = " << heading.heading_deg << std::endl;
-        m_currHeadingPidValue = m_headingPid(heading.heading_deg);
+        //m_currHeadingPidValue = m_headingPid->call(heading.heading_deg);
     }
 }

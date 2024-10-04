@@ -43,7 +43,7 @@ void SuaveMaskingController::start() {
     auto masking_spinner = std::make_shared<RosNodeSpinner>();
     m_task.push_back(masking_spinner);
 
-    m_masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get());
+    m_masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get(), vio_bridge_node.get());
     masking_spinner->add_node(m_masking_subscriber);
 
     suave_log << "Starting SLAM" << std::endl;
@@ -80,8 +80,6 @@ void SuaveMaskingController::start() {
     try_offboard(m_drone->offboard_setpoint())
     try_offboard(m_drone->offboard().start())
 
-    sleep(5)
-
     while (true) 
     {
         suave_log << "Input action: ";
@@ -94,13 +92,13 @@ void SuaveMaskingController::start() {
         }
         if (buffer == "start")
         {
-            m_masking_subscriber->set_enable(true);
+            m_masking_subscriber->enable( 180 / 3.14 * vio_bridge_node->get_recent_yaw_rad());
             masking_spinner->start_in_thread();
             masking_pid_task->start_in_thread();
         }
         if (buffer == "stop")
         {
-            m_masking_subscriber->set_enable(false);
+            m_masking_subscriber->disable();
             masking_pid_task->stop();
             masking_spinner->stop();
             try_offboard(m_drone->offboard_hold())
@@ -133,6 +131,8 @@ void SuaveMaskingController::start() {
         suave_log << std::endl;
     }
 
+    m_masking_subscriber->export_yaw();
+
     m_drone->offboard_wait_for_land();
 
     suave_log << "Stopping task" << std::endl;
@@ -149,8 +149,10 @@ void SuaveMaskingController::shutdown() {
     suave_log << "SuaveMaskingController::shutdown()" << std::endl;
     if (m_masking_subscriber)
     {
-        m_masking_subscriber->set_enable(false);
+        m_masking_subscriber->disable();
     }
+
+    m_masking_subscriber->export_yaw();
 
     m_drone->offboard_wait_for_land();
     
