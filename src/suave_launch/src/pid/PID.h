@@ -71,7 +71,8 @@ public:
 
     void export_csv()
     {
-        std::ofstream csvFile("/home/suave/Data/SuaveMaskingPid/yaw_latest.csv");
+        std::ofstream csvFile{};
+        csvFile.open("/home/suave/Data/SuaveMaskingPid/yaw_latest.csv", std::ofstream::out | std::ofstream::trunc);
         if (csvFile.is_open()) {
             csvFile << m_csv_ss.str();
             csvFile.close();
