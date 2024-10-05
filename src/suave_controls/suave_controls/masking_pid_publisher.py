@@ -196,6 +196,7 @@ class MaskingPIDPublisher(Node):
                 ])  
         self.get_logger().info('Exported bounding box data to CSV file!')
         self.bounding_box_data.clear()
+        os.system("cp %s /home/suave/Data/SuaveMaskingPid/latest.csv" % csv_file_path)
         return response
     
 def test_export(maskingPIDPublisher):

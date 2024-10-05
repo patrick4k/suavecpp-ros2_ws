@@ -75,6 +75,15 @@ void SuaveMaskingController::start() {
         }
     );
 
+    auto export_task = SystemTask
+            {
+                std::vector<std::string>{
+                    "source /opt/ros/humble/setup.bash",
+                    "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
+                    "ros2 service call /export std_srvs/srv/Empty"
+                }
+            };
+
     // Start offboard and arm
     try_action(m_drone->action().arm())
     try_offboard(m_drone->offboard_setpoint())
@@ -115,22 +124,11 @@ void SuaveMaskingController::start() {
         {
             break;
         }
-        if (buffer == "export")
-        {
-            auto export_task = SystemTask
-            {
-                std::vector<std::string>{
-                    "source /opt/ros/humble/setup.bash",
-                    "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
-                    "ros2 service call /export std_srvs/srv/Empty"
-                }
-            };
 
-            export_task.start();
-        }
         suave_log << std::endl;
     }
 
+    export_task.start_in_thread();
     m_masking_subscriber->export_yaw();
 
     m_drone->offboard_wait_for_land();
