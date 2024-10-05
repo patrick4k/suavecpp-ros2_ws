@@ -71,6 +71,8 @@ class MaskingPIDPublisher(Node):
         self.center_y = self.frame_height / 2
         self.setpoint_depth = 254  # Example setpoint for depth in millimeters
 
+        self.start_time = time.time()
+
         self.pid_x = PID(XGAINS[0], XGAINS[1], XGAINS[2], setpoint=self.center_x)  # PID for horizontal position
         self.pid_y = PID(YGAINS[0], YGAINS[1], YGAINS[2], setpoint=self.center_y)  # PID for vertical position
         self.pid_depth = PID(ZGAINS[0], ZGAINS[1], ZGAINS[2], setpoint=self.setpoint_depth)  # PID for depth position
@@ -105,8 +107,6 @@ class MaskingPIDPublisher(Node):
             frame_with_contours, center_x_box, center_y_box, depth = find_and_draw_contours(masked_frame, mask)
 
             if center_x_box is not None and center_y_box is not None:
-
-
                 contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             if contours:
                 largest_contour = max(contours, key=cv2.contourArea)
@@ -142,7 +142,9 @@ class MaskingPIDPublisher(Node):
                 self.get_logger().info('Publishing masking pid publisher!')
                 rclpy.spin_once(self, timeout_sec=0)
 
+                dt = time.time() - self.start_time
                 bounding_box_info = {
+                    'time': dt,
                     'width': w,  
                     'height': h,  
                     'center_x': center_x_box,
@@ -180,9 +182,10 @@ class MaskingPIDPublisher(Node):
         with open(csv_file_path, mode='a', newline='') as file:
             writer = csv.writer(file)
             if not file_exists:
-                writer.writerow(['Width', 'Height', 'Center X', 'Center Y', 'PID X', 'PID Y', 'PID Depth'])
+                writer.writerow(['time', 'Width', 'Height', 'Center X', 'Center Y', 'PID X', 'PID Y', 'PID Depth'])
             for data in self.bounding_box_data:
                 writer.writerow([
+                    data['time'],
                     data['width'],
                     data['height'],
                     data['center_x'],
