@@ -42,6 +42,7 @@ public:
         if (!m_startTime)
         {
             m_startTime = now;
+            m_csv_ss << "time,setpoint,input,error,output\n";
         }
 
         if (m_prevTime)
@@ -73,11 +74,13 @@ public:
     {
         std::ofstream csvFile{};
         csvFile.open("/home/suave/Data/SuaveMaskingPid/yaw_latest.csv", std::ofstream::out | std::ofstream::trunc);
-        if (csvFile.is_open()) {
+        if (csvFile.is_open()) 
+        {
             csvFile << m_csv_ss.str();
             csvFile.close();
             std::cout << "CSV file written successfully.\n";
-        } else {
+        } else 
+        {
             std::cerr << "Error opening file.\n";
         }
     }
@@ -97,7 +100,7 @@ private:
     double m_prevError{ 0 };
 
     bool m_enableLogging{ false };
-    std::stringstream m_csv_ss{ "Time,Setpoint,Input,Error,Output\n" };
+    std::stringstream m_csv_ss{};
 
     void log(Time now, double input, double error, double output)
     {

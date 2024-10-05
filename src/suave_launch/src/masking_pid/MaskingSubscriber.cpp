@@ -9,7 +9,10 @@
 void MaskingSubscriber::enable(double yawsetpoint_deg)
 {
     std::cout << "Enabling masking subscriber with yawsetpoint = " << yawsetpoint_deg << std::endl;
-    m_headingPid = YawPID{ 5.0, 2.25, 2.5, yawsetpoint_deg, true };
+    //m_headingPid = YawPID{ 4.25, 2.25, 3.5, yawsetpoint_deg, true };
+    constexpr double Ku = 4.5;
+    constexpr double Tu = 2.3;
+    m_headingPid = YawPID{ 0.6*Ku, 1.2*Ku/Tu, 0.075*Ku*Tu, yawsetpoint_deg, true };
     m_enable = true;
 }
 
@@ -28,7 +31,7 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
         constexpr float MAX_VELOCITY = 0.25;
         constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
-        constexpr float MAX_YAWSPEED = 30;
+        constexpr float MAX_YAWSPEED = 90;
         constexpr float MAX_DELTA_YAWSPEED = 2.0*MAX_YAWSPEED;
 
         const auto x = static_cast<float>(msg->x / 100);
@@ -52,12 +55,12 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
             this->shutdown();
             return;
         }
-        // if (m_prevVelocity && std::abs(velocity.right_m_s - m_prevVelocity->right_m_s) > MAX_DELTA_VELOCITY)
-        // {
-        //     suave_err << "Large difference in right velocity: " << velocity.right_m_s << " vs " << m_prevVelocity->right_m_s << std::endl;
-        //     this->shutdown();
-        //     return;
-        // }
+        if (m_prevVelocity && std::abs(velocity.right_m_s - m_prevVelocity->right_m_s) > MAX_DELTA_VELOCITY)
+        {
+            suave_err << "Large difference in right velocity: " << velocity.right_m_s << " vs " << m_prevVelocity->right_m_s << std::endl;
+            this->shutdown();
+            return;
+        }
         if (m_prevVelocity && std::abs(velocity.down_m_s - m_prevVelocity->down_m_s) > MAX_DELTA_VELOCITY)
         {
             suave_err << "Large difference in down velocity: " << velocity.down_m_s << " vs " << m_prevVelocity->down_m_s << std::endl;
