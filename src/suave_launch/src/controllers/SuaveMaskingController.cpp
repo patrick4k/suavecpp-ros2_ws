@@ -150,9 +150,20 @@ void SuaveMaskingController::shutdown() {
         m_masking_subscriber->disable();
     }
 
-    m_masking_subscriber->export_yaw();
+    auto export_task = SystemTask
+            {
+                std::vector<std::string>{
+                    "source /opt/ros/humble/setup.bash",
+                    "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
+                    "ros2 service call /export std_srvs/srv/Empty"
+                }
+            };
 
     m_drone->offboard_wait_for_land();
+
+    export_task.start_in_thread();
+
+    m_masking_subscriber->export_yaw();
     
     for (auto& task: m_task) {
         task->stop();

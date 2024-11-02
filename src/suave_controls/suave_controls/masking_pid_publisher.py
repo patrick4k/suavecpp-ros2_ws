@@ -14,11 +14,11 @@ def apply_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # Define range of neon yellow color in HSV
-    lower_yellow = np.array([140, 50, 50])  # Lower bound for neon yellow
-    upper_yellow = np.array([170, 255, 255])  # Upper bound for neon yellow
+    lower_pink = np.array([140, 50, 50])  # Lower bound for pink
+    upper_pink = np.array([170, 255, 255])  # Upper bound for pink
 
-    # Create masks. Threshold the HSV image to get only neon yellow colors
-    mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    # Create masks. Threshold the HSV image to get only pink colors
+    mask = cv2.inRange(hsv, lower_pink, upper_pink)
 
     # Bitwise-AND mask and original image
     result = cv2.bitwise_and(frame, frame, mask=mask)
@@ -26,6 +26,7 @@ def apply_mask(frame):
 
 def find_and_draw_contours(frame, mask):
     # Find contours in the mask
+    contours = None
     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # If no contours are found, return the original frame
@@ -69,7 +70,7 @@ class MaskingPIDPublisher(Node):
         self.frame_height = 480  # Adjust to your camera frame height
         self.center_x = self.frame_width / 2
         self.center_y = self.frame_height / 2
-        self.setpoint_depth = 254  # Example setpoint for depth in millimeters
+        self.setpoint_depth = 16  # Example setpoint for depth in pixels
 
         self.start_time = time.time()
 
@@ -86,6 +87,7 @@ class MaskingPIDPublisher(Node):
 
     def livestream_from_camera(self, camera_index=0):
         # Open a connection to the camera
+        contours = None
         cap = cv2.VideoCapture(camera_index)
 
         if not cap.isOpened():

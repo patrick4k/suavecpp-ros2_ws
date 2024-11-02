@@ -9,10 +9,10 @@
 void MaskingSubscriber::enable(double yawsetpoint_deg)
 {
     std::cout << "Enabling masking subscriber with yawsetpoint = " << yawsetpoint_deg << std::endl;
-    //m_headingPid = YawPID{ 4.25, 2.25, 3.5, yawsetpoint_deg, true };
-    constexpr double Ku = 4.5;
-    constexpr double Tu = 2.3;
-    m_headingPid = YawPID{ 0.6*Ku, 1.2*Ku/Tu, 0.075*Ku*Tu, yawsetpoint_deg, true };
+    m_headingPid = YawPID{ 4.25, 3.25, 3.75, yawsetpoint_deg, true };
+    //constexpr double Ku = 4; here
+    //constexpr double Tu = 2.3; here
+    //m_headingPid = YawPID{ 0.6*Ku, 1.2*Ku/Tu, 0.075*Ku*Tu, yawsetpoint_deg, true }; here
     m_enable = true;
 }
 
@@ -29,7 +29,7 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
         auto heading_deg = 180 / 3.14 * m_vio_bridge->get_recent_yaw_rad();
         m_currHeadingPidValue = m_headingPid->call(heading_deg);
 
-        constexpr float MAX_VELOCITY = 0.25;
+        constexpr float MAX_VELOCITY = 0.5;
         constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
         constexpr float MAX_YAWSPEED = 90;
         constexpr float MAX_DELTA_YAWSPEED = 2.0*MAX_YAWSPEED;
@@ -41,10 +41,10 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
         Velocity velocity
         {
-            0 * MAX_VELOCITY * x, // forward m/s
-            0 * MAX_VELOCITY * z, // right m/s
-            0 * MAX_VELOCITY * -y, // down m/s
-            MAX_YAWSPEED * w // yawspeed deg/s
+            MAX_VELOCITY * x, // forward m/s here
+            MAX_VELOCITY * z, // right m/s here
+            MAX_VELOCITY * -y, // down m/s here
+            0 * MAX_YAWSPEED * w // yawspeed deg/s
         };
 
         //suave_log << "w = " << w << "\nyawspeed = " << velocity.yawspeed_deg_s << std::endl;
