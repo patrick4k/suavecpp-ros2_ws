@@ -82,7 +82,7 @@ class MaskingPIDPublisher(Node):
         self.pid_y.output_limits = (-100, 100)  # Adjust as needed for your application
         self.pid_depth.output_limits = (-100, 100)  # Adjust as needed for your application
 
-        self._srv_export = self.create_service(Empty, 'export', self.service_export)
+        self._srv_export = self.create_service(Empty, 'exportXYZ', self.service_export)
 
 
     def livestream_from_camera(self, camera_index=0):
@@ -133,9 +133,10 @@ class MaskingPIDPublisher(Node):
                     print(f'Center Y: {center_y_box:.2f}\tControl Y: {control_y:.2f}')
                     print(f'Depth: {depth:.2f}\t\tControl Depth: {control_depth:.2f}')
                     
-                    dt = time.time() - self.start_time
+                    currTime = time.time()
+                    dt = currTime - self.start_time
                     bounding_box_info = {
-                        'time': dt,
+                        'time': currTime,
                         'width': w,  
                         'height': h,  
                         'center_x': center_x_box,
@@ -177,7 +178,7 @@ class MaskingPIDPublisher(Node):
 
         # TODO: Lets export this generically, maybe a file like ~/Data/MaskingPidData/MM_dd_HH_mm_ss.csv
 
-        csv_filename = time.strftime("%m_%d_%H_%M_%S.csv")
+        csv_filename = time.strftime("XYZ_%m_%d_%H_%M_%S.csv")
         csv_file_path = '/home/suave/Data/SuaveMaskingPid/%s' % csv_filename
         file_exists = os.path.isfile(csv_file_path)
         

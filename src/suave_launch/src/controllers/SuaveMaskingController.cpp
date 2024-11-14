@@ -81,7 +81,8 @@ void SuaveMaskingController::start() {
                 std::vector<std::string>{
                     "source /opt/ros/humble/setup.bash",
                     "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
-                    "ros2 service call /export std_srvs/srv/Empty"
+                    "ros2 service call /exportXYZ std_srvs/srv/Empty",
+                    "ros2 service call /exportCPU std_srvs/srv/Empty"
                 }
             };
 
@@ -156,7 +157,8 @@ void SuaveMaskingController::shutdown() {
                 std::vector<std::string>{
                     "source /opt/ros/humble/setup.bash",
                     "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
-                    "ros2 service call /export std_srvs/srv/Empty"
+                    "ros2 service call /exportXYZ std_srvs/srv/Empty",
+                    "ros2 service call /exportCPU std_srvs/srv/Empty"
                 }
             };
 

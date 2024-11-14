@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'masking_pid_publisher = suave_controls.masking_pid_publisher:main'
+            'masking_pid_publisher = suave_controls.masking_pid_publisher:main',
+            'cpu_logger = suave_controls.cpu_logger:main'
         ],
     },
 )

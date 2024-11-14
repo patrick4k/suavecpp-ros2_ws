@@ -10,14 +10,14 @@ import threading
 class CpuMonitorNode(Node):
     def __init__(self):
         super().__init__('cpu_monitor')
-        self.declare_parameter('frequency', 0.5)  # Default frequency: 1 Hz
+        self.declare_parameter('frequency', 5.0)
 
         self.frequency = self.get_parameter('frequency').get_parameter_value().double_value
         self.cpu_usage_data = []  # To store (timestamp, CPU usage) tuples
         self.is_running = True  # To control the CPU monitoring loop
 
         # Service for exporting data
-        self.export_service = self.create_service(Empty, 'export', self.export_callback)
+        self.export_service = self.create_service(Empty, 'exportCPU', self.export_callback)
 
         # Start monitoring CPU usage in a separate thread
         self.monitor_thread = threading.Thread(target=self.monitor_cpu_usage)
@@ -40,7 +40,7 @@ class CpuMonitorNode(Node):
                 writer = csv.writer(file)
                 writer.writerow(['Timestamp', 'CPU Usage (%)'])
                 writer.writerows(self.cpu_usage_data)
-            self.get_logger().info(f'CPU usage data exported to {filename}')
+            self.get_logger().info(f'CPU usage data exported to {csv_file_path}')
         except Exception as e:
             self.get_logger().error(f'Failed to export data: {str(e)}')
         return response
