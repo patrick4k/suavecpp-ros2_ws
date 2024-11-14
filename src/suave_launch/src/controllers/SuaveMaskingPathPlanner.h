@@ -2,8 +2,8 @@
 // Created by patrick on 9/5/24.
 //
 
-#ifndef SUAVEMASKINGCONTROLLER_H
-#define SUAVEMASKINGCONTROLLER_H
+#ifndef SUAVEMASKINGPATHPLANNER_H
+#define SUAVEMASKINGPATHPLANNER_H
 
 #include "../common/ISuaveController.h"
 #include "../mavutil/Drone.h"
@@ -11,9 +11,9 @@
 #include "../common/ITask.h"
 #include "../masking_pid/MaskingSubscriber.h"
 
-class SuaveMaskingController: public ISuaveController {
+class SuavePathPlanner: public ISuaveController {
 public:
-    SuaveMaskingController() :
+    SuavePathPlanner() :
         ISuaveController()
     {
         try {
@@ -31,7 +31,6 @@ private:
     bool m_end_controller{ false };
     std::unique_ptr<Drone> m_drone{ nullptr };
     std::vector<std::shared_ptr<ITask>> m_task{};
-    std::shared_ptr<MaskingSubscriber> m_masking_subscriber{nullptr};
 };
 
-#endif //SUAVEMASKINGCONTROLLER_H
+#endif //SUAVEMASKINGPATHPLANNER_H

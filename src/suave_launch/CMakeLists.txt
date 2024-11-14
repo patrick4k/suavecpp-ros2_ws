@@ -57,6 +57,8 @@ add_executable(suave_main src/suave_main.cpp
         src/vio/CloudExporter.h
         src/controllers/SuaveMaskingController.cpp
         src/controllers/SuaveMaskingController.h
+        src/controllers/SuaveMaskingPathPlanner.cpp
+        src/controllers/SuaveMaskingPathPlanner.h
         src/masking_pid/MaskingSubscriber.cpp
         src/masking_pid/MaskingSubscriber.h
         src/controllers/ControllerMacros.h

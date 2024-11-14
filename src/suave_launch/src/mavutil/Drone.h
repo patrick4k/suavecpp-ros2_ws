@@ -7,6 +7,8 @@
 #include <system.h>
 #include <thread>
 #include <plugins/action/action.h>
+#include <tuple>
+#include <optional>
 
 #include <plugins/offboard/offboard.h>
 #include <plugins/telemetry/telemetry.h>
@@ -53,6 +55,8 @@ public:
 
     // Blocking until next position update
     Offboard::Result set_relative_position_ned(const float& n, const float& e, const float& d);
+    void set_local_position_setpoint();
+    Offboard::Result set_local_position_ned(double n, double e, double d);  
 
     Offboard::Result offboard_land();
     Offboard::Result offboard_wait_for_land();
@@ -82,6 +86,14 @@ private:
 
     // Misc
     double m_initial_heading_rad{ NAN };
+    struct LocalPosition 
+    {
+        float north; 
+        float east; 
+        float down;
+        float yaw;
+    };
+    std::optional<LocalPosition> m_local_setpoint{};
 };
 
 #endif //DRONE_H
