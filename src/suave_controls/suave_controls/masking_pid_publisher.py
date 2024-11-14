@@ -14,7 +14,7 @@ def apply_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # Define range of neon yellow color in HSV
-    lower_pink = np.array([140, 50, 50])  # Lower bound for pink
+    lower_pink = np.array([140, 100, 100])  # Lower bound for pink
     upper_pink = np.array([170, 255, 255])  # Upper bound for pink
 
     # Create masks. Threshold the HSV image to get only pink colors
@@ -56,7 +56,7 @@ def find_and_draw_contours(frame, mask):
 #         P, I, D
 XGAINS = [1, 0, 0]
 YGAINS = [1, 0, 0]
-ZGAINS = [1, 0, 0]
+ZGAINS = [7.5, 0, 0]
 
 class MaskingPIDPublisher(Node):
 
@@ -70,7 +70,7 @@ class MaskingPIDPublisher(Node):
         self.frame_height = 480  # Adjust to your camera frame height
         self.center_x = self.frame_width / 2
         self.center_y = self.frame_height / 2
-        self.setpoint_depth = 16  # Example setpoint for depth in pixels
+        self.setpoint_depth = 20  # Example setpoint for depth in pixels
 
         self.start_time = time.time()
 
@@ -132,6 +132,19 @@ class MaskingPIDPublisher(Node):
                     print(f'Center X: {center_x_box:.2f}\tControl X: {control_x:.2f}')
                     print(f'Center Y: {center_y_box:.2f}\tControl Y: {control_y:.2f}')
                     print(f'Depth: {depth:.2f}\t\tControl Depth: {control_depth:.2f}')
+                    
+                    dt = time.time() - self.start_time
+                    bounding_box_info = {
+                        'time': dt,
+                        'width': w,  
+                        'height': h,  
+                        'center_x': center_x_box,
+                        'center_y': center_y_box,
+                        'pid_x': control_x,
+                        'pid_y': control_y,
+                        'pid_depth': control_depth
+                    }
+                    self.bounding_box_data.append(bounding_box_info)
                 except:
                     print("Something went wrong printing...")
 
@@ -144,20 +157,7 @@ class MaskingPIDPublisher(Node):
                 self.get_logger().info('Publishing masking pid publisher!')
                 rclpy.spin_once(self, timeout_sec=0)
 
-                dt = time.time() - self.start_time
-                bounding_box_info = {
-                    'time': dt,
-                    'width': w,  
-                    'height': h,  
-                    'center_x': center_x_box,
-                    'center_y': center_y_box,
-                    'pid_x': control_x,
-                    'pid_y': control_y,
-                    'pid_depth': control_depth
-                }
-                self.bounding_box_data.append(bounding_box_info)
-
-                self.get_logger().info(f'Bounding box data collected: {bounding_box_info}')
+                #self.get_logger().info(f'Bounding box data collected: {bounding_box_info}')
 
 
             # Display the resulting frame and mask

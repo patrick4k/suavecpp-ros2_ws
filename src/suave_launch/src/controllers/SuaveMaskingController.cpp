@@ -72,7 +72,8 @@ void SuaveMaskingController::start() {
             "source /opt/ros/humble/setup.bash",
             "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
             "ros2 run suave_controls masking_pid_publisher"
-        }
+        },
+        true
     );
 
     auto export_task = SystemTask

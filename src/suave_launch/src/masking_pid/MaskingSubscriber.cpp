@@ -26,38 +26,36 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
 
     if (m_enable)
     {
-        auto heading_deg = 180 / 3.14 * m_vio_bridge->get_recent_yaw_rad();
-        m_currHeadingPidValue = m_headingPid->call(heading_deg);
+        //auto heading_deg = 180 / 3.14 * m_vio_bridge->get_recent_yaw_rad();
+        //m_currHeadingPidValue = m_headingPid->call(heading_deg);
 
         constexpr float MAX_VELOCITY = 0.5;
         constexpr float MAX_DELTA_VELOCITY = 2.0*MAX_VELOCITY;
-        constexpr float MAX_YAWSPEED = 90;
-        constexpr float MAX_DELTA_YAWSPEED = 2.0*MAX_YAWSPEED;
 
         const auto x = static_cast<float>(msg->x / 100);
         const auto y = static_cast<float>(msg->y / 100);
         const auto z = static_cast<float>(msg->z / 100);
         const auto w = static_cast<float>(m_currHeadingPidValue.load() / 100);
 
-        Velocity velocity
+        VelocityNed velocity
         {
             MAX_VELOCITY * x, // forward m/s here
             MAX_VELOCITY * z, // right m/s here
             MAX_VELOCITY * -y, // down m/s here
-            0 * MAX_YAWSPEED * w // yawspeed deg/s
+            0  // yaw deg
         };
 
         //suave_log << "w = " << w << "\nyawspeed = " << velocity.yawspeed_deg_s << std::endl;
 
-        if (m_prevVelocity && std::abs(velocity.forward_m_s - m_prevVelocity->forward_m_s) > MAX_DELTA_VELOCITY)
+        if (m_prevVelocity && std::abs(velocity.north_m_s - m_prevVelocity->north_m_s) > MAX_DELTA_VELOCITY)
         {
-            suave_err << "Large difference in forward velocity: " << velocity.forward_m_s << " vs " << m_prevVelocity->forward_m_s << std::endl;
+            suave_err << "Large difference in north velocity: " << velocity.north_m_s << " vs " << m_prevVelocity->north_m_s << std::endl;
             this->shutdown();
             return;
         }
-        if (m_prevVelocity && std::abs(velocity.right_m_s - m_prevVelocity->right_m_s) > MAX_DELTA_VELOCITY)
+        if (m_prevVelocity && std::abs(velocity.east_m_s - m_prevVelocity->east_m_s) > MAX_DELTA_VELOCITY)
         {
-            suave_err << "Large difference in right velocity: " << velocity.right_m_s << " vs " << m_prevVelocity->right_m_s << std::endl;
+            suave_err << "Large difference in east velocity: " << velocity.east_m_s << " vs " << m_prevVelocity->east_m_s << std::endl;
             this->shutdown();
             return;
         }
@@ -67,21 +65,15 @@ void MaskingSubscriber::callback(const Vector3Msg::SharedPtr msg) {
             this->shutdown();
             return;
         }
-        if (m_prevVelocity && std::abs(velocity.yawspeed_deg_s - m_prevVelocity->yawspeed_deg_s) > MAX_DELTA_YAWSPEED)
-        {
-            suave_err << "Large difference in yawspped: " << velocity.yawspeed_deg_s << " vs " << m_prevVelocity->yawspeed_deg_s << std::endl;
-            this->shutdown();
-            return;
-        }
 
-        const auto& result = m_drone->offboard().set_velocity_body(velocity);
+        const auto& result = m_drone->offboard().set_velocity_ned(velocity);
         if (result == Offboard::Result::Success)
         {
             m_prevVelocity = velocity;
         }
         else
         {
-            suave_log << "Error setting velocity: " << result << "\nF: " << velocity.forward_m_s << "\nR: " << velocity.right_m_s << "\nD:" << velocity.down_m_s << std::endl;
+            suave_log << "Error setting velocity: " << result << "\nF: " << velocity.north_m_s << "\nR: " << velocity.east_m_s << "\nD:" << velocity.down_m_s << std::endl;
             this->shutdown();
         }
     }

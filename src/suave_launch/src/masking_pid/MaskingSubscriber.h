@@ -48,12 +48,13 @@ private:
     Subscription::SharedPtr m_subscription{ nullptr };
 
     using Velocity = Offboard::VelocityBodyYawspeed;
+    using VelocityNed = Offboard::VelocityNedYaw;
 
     Drone* m_drone{ nullptr };
     VIOBridge* m_vio_bridge{ nullptr };
     std::atomic_bool m_enable{ false };
     std::atomic_bool m_end_controller{ false };
-    std::optional<Velocity> m_prevVelocity;
+    std::optional<VelocityNed> m_prevVelocity;
 
     std::optional<YawPID> m_headingPid{};
     std::atomic<double> m_currHeadingPidValue{};

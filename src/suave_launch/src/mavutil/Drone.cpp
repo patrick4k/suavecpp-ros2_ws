@@ -55,9 +55,16 @@ Offboard::Result Drone::offboard_wait_for_land()
 
     // Wait for drone to land
     int elapse_sec = 0;
+    constexpr auto MAX_ELAPSE = 10;
     while (in_air())
     {
         suave_log << "Waiting for drone to land, elapse_sec: " << elapse_sec << std::endl;
+
+        if (elapse_sec >= MAX_ELAPSE)
+        {
+            break;
+        }
+
         sleep(1)
         elapse_sec++;
     }
