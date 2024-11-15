@@ -30,6 +30,16 @@ void SuaveMaskingController::start() {
     );
     m_task.push_back(rtabmap_task);
 
+    auto cpu_logger = std::make_shared<SystemTask>(
+        std::vector<std::string>{
+            "source /opt/ros/humble/setup.bash",
+            "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
+            "ros2 run suave_controls cpu_logger"
+        }
+    );
+    m_task.push_back(cpu_logger);
+    cpu_logger->start_in_thread();
+
     // Create ROS spinner and add vio bridge and cloud exporter node
     auto vio_spinner = std::make_shared<RosNodeSpinner>();
     m_task.push_back(vio_spinner);
@@ -72,8 +82,7 @@ void SuaveMaskingController::start() {
             "source /opt/ros/humble/setup.bash",
             "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
             "ros2 run suave_controls masking_pid_publisher"
-        },
-        true
+        }
     );
 
     auto export_task = SystemTask
@@ -99,7 +108,7 @@ void SuaveMaskingController::start() {
 
         if (buffer == "takeoff")
         {
-            try_offboard(m_drone->set_relative_position_ned(0, 0, -1.75))
+            try_offboard(m_drone->set_relative_position_ned(0, 0, -2))
         }
         if (buffer == "start")
         {
@@ -125,6 +134,11 @@ void SuaveMaskingController::start() {
         if (buffer == "exit")
         {
             break;
+        }
+        if (buffer == "export")
+        {
+            export_task.start_in_thread();
+            m_masking_subscriber->export_yaw();
         }
 
         suave_log << std::endl;
@@ -152,21 +166,7 @@ void SuaveMaskingController::shutdown() {
         m_masking_subscriber->disable();
     }
 
-    auto export_task = SystemTask
-            {
-                std::vector<std::string>{
-                    "source /opt/ros/humble/setup.bash",
-                    "source ~/Dev/suavecpp-ros2_ws/install/setup.bash",
-                    "ros2 service call /exportXYZ std_srvs/srv/Empty",
-                    "ros2 service call /exportCPU std_srvs/srv/Empty"
-                }
-            };
-
     m_drone->offboard_wait_for_land();
-
-    export_task.start_in_thread();
-
-    m_masking_subscriber->export_yaw();
     
     for (auto& task: m_task) {
         task->stop();

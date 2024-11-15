@@ -6,11 +6,14 @@ import psutil
 import csv
 import time
 import threading
+import os
 
 class CpuMonitorNode(Node):
     def __init__(self):
         super().__init__('cpu_monitor')
         self.declare_parameter('frequency', 5.0)
+
+        self.start_time = time.time()
 
         self.frequency = self.get_parameter('frequency').get_parameter_value().double_value
         self.cpu_usage_data = []  # To store (timestamp, CPU usage) tuples
@@ -29,6 +32,7 @@ class CpuMonitorNode(Node):
             # Get CPU usage with a blocking interval for frequency control
             cpu_usage = psutil.cpu_percent(interval=1.0 / self.frequency)
             timestamp = time.time()  # UNIX timestamp
+            dt = timestamp - self.start_time
             self.cpu_usage_data.append((timestamp, cpu_usage))
             self.get_logger().info(f'CPU Usage: {cpu_usage}% at {timestamp}')
 
@@ -36,6 +40,9 @@ class CpuMonitorNode(Node):
         try:
             csv_filename = time.strftime("CPU_%m_%d_%H_%M_%S.csv")
             csv_file_path = '/home/suave/Data/SuaveMaskingPid/%s' % csv_filename
+            if os.path.isfile(csv_file_path):
+                self.get_logger().info('File already exist?')
+                return response
             with open(csv_file_path, mode='a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(['Timestamp', 'CPU Usage (%)'])

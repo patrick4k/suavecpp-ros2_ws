@@ -70,7 +70,7 @@ class MaskingPIDPublisher(Node):
         self.frame_height = 480  # Adjust to your camera frame height
         self.center_x = self.frame_width / 2
         self.center_y = self.frame_height / 2
-        self.setpoint_depth = 20  # Example setpoint for depth in pixels
+        self.setpoint_depth = 24  # Example setpoint for depth in pixels
 
         self.start_time = time.time()
 
@@ -162,8 +162,8 @@ class MaskingPIDPublisher(Node):
 
 
             # Display the resulting frame and mask
-            cv2.imshow('Live Stream with Bounding Box and Center Point', frame_with_contours)
-            cv2.imshow('Mask', mask)
+            #cv2.imshow('Live Stream with Bounding Box and Center Point', frame_with_contours)
+            #cv2.imshow('Mask', mask)
 
             # Press 'q' to quit the livestream
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -181,6 +181,10 @@ class MaskingPIDPublisher(Node):
         csv_filename = time.strftime("XYZ_%m_%d_%H_%M_%S.csv")
         csv_file_path = '/home/suave/Data/SuaveMaskingPid/%s' % csv_filename
         file_exists = os.path.isfile(csv_file_path)
+
+        if file_exists:
+            self.get_logger().info('File already exist?')
+            return response
         
         with open(csv_file_path, mode='a', newline='') as file:
             writer = csv.writer(file)
@@ -198,7 +202,6 @@ class MaskingPIDPublisher(Node):
                     data['pid_depth']
                 ])  
         self.get_logger().info('Exported bounding box data to CSV file!')
-        self.bounding_box_data.clear()
         os.system("cp %s /home/suave/Data/SuaveMaskingPid/latest.csv" % csv_file_path)
         return response
     

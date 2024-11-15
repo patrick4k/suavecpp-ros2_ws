@@ -52,4 +52,5 @@ pip install opencv-python
 perl find_ftdi_id.pl
 
 sudo usermod -a -G dialout $USER
+sudo usermod -a -G video $USER
 echo "Setup exiting, reboot device to apply changes..."
