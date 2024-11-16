@@ -108,7 +108,7 @@ void SuaveMaskingController::start() {
 
         if (buffer == "takeoff")
         {
-            try_offboard(m_drone->set_relative_position_ned(0, 0, -2))
+            try_offboard(m_drone->set_relative_position_ned(0, 0, -1.75))
         }
         if (buffer == "start")
         {

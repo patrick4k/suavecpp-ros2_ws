@@ -70,7 +70,7 @@ class MaskingPIDPublisher(Node):
         self.frame_height = 480  # Adjust to your camera frame height
         self.center_x = self.frame_width / 2
         self.center_y = self.frame_height / 2
-        self.setpoint_depth = 24  # Example setpoint for depth in pixels
+        self.setpoint_depth = 21  # Example setpoint for depth in pixels
 
         self.start_time = time.time()
 
