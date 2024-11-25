@@ -53,7 +53,7 @@ void SuaveMaskingController::start() {
     auto masking_spinner = std::make_shared<RosNodeSpinner>();
     m_task.push_back(masking_spinner);
 
-    m_masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get(), vio_bridge_node.get());
+    m_masking_subscriber = std::make_shared<MaskingSubscriber>(m_drone.get());
     masking_spinner->add_node(m_masking_subscriber);
 
     suave_log << "Starting SLAM" << std::endl;
@@ -112,7 +112,7 @@ void SuaveMaskingController::start() {
         }
         if (buffer == "start")
         {
-            m_masking_subscriber->enable( 180 / 3.14 * vio_bridge_node->get_recent_yaw_rad());
+            m_masking_subscriber->enable();
             masking_spinner->start_in_thread();
             masking_pid_task->start_in_thread();
         }
@@ -138,14 +138,12 @@ void SuaveMaskingController::start() {
         if (buffer == "export")
         {
             export_task.start_in_thread();
-            m_masking_subscriber->export_yaw();
         }
 
         suave_log << std::endl;
     }
 
     export_task.start_in_thread();
-    m_masking_subscriber->export_yaw();
 
     m_drone->offboard_wait_for_land();
 

@@ -6,6 +6,7 @@
 #define MASKINGSUBSCRIBER_H
 
 #include <geometry_msgs/msg/vector3.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <atomic>
 
@@ -15,49 +16,40 @@
 #include <optional>
 
 using Vector3Msg = geometry_msgs::msg::Vector3;
+using QuaternionMsg = geometry_msgs::msg::Quaternion;
 
 class MaskingSubscriber final : public rclcpp::Node {
 public:
-    explicit MaskingSubscriber(Drone* drone, VIOBridge* vio_bridge) : Node("suave_masking_subscriber"), 
-        m_drone{ drone }, 
-        m_vio_bridge{ vio_bridge } 
+    explicit MaskingSubscriber(Drone* drone) : Node("suave_masking_subscriber"), 
+        m_drone{ drone }
     {
-        m_subscription = this->create_subscription<Vector3Msg>(
+        // m_subscription = this->create_subscription<Vector3Msg>(
+        m_subscription = this->create_subscription<QuaternionMsg>(
             "/masking_pid_publisher", 10, std::bind(&MaskingSubscriber::callback, this, std::placeholders::_1));
         m_drone->set_heading_callback(std::bind(&MaskingSubscriber::heading_callback, this, std::placeholders::_1));
     }
 
-    void enable(double yawsetpoint_deg);
+    void enable();
     void disable();
-    void export_yaw()
-    {
-        if (m_headingPid)
-        {
-            m_headingPid->export_csv();
-        }
-    }
 
 private:
 
-    void callback(const Vector3Msg::SharedPtr msg);
+    // void callback(const Vector3Msg::SharedPtr msg);
+    void callback(const QuaternionMsg::SharedPtr msg);
     void shutdown();
 
     void heading_callback(mavsdk::Telemetry::Heading heading);
 
-    using Subscription = rclcpp::Subscription<Vector3Msg>;
+    // using Subscription = rclcpp::Subscription<Vector3Msg>;
+    using Subscription = rclcpp::Subscription<QuaternionMsg>;
     Subscription::SharedPtr m_subscription{ nullptr };
 
     using Velocity = Offboard::VelocityBodyYawspeed;
-    using VelocityNed = Offboard::VelocityNedYaw;
 
     Drone* m_drone{ nullptr };
-    VIOBridge* m_vio_bridge{ nullptr };
     std::atomic_bool m_enable{ false };
     std::atomic_bool m_end_controller{ false };
-    std::optional<VelocityNed> m_prevVelocity;
-
-    std::optional<YawPID> m_headingPid{};
-    std::atomic<double> m_currHeadingPidValue{};
+    std::optional<Velocity> m_prevVelocity;
 };
 
 #endif //MASKINGSUBSCRIBER_H
